@@ -10,7 +10,7 @@
         android:id="@+id/ll1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="4"
+        android:layout_weight="3"
         android:gravity="center_vertical|center_horizontal">
 
         <TextView
@@ -18,7 +18,7 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="@string/login_message"
-            android:id="@+id/textView2"
+            android:id="@+id/login_message"
             android:textSize="30sp"
             android:textColor="#ffffffff" />
 
@@ -32,22 +32,29 @@
         android:orientation="vertical"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:gravity="center_vertical|center_horizontal">
 
-            <AutoCompleteTextView android:id="@+id/username" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:hint="@string/prompt_username"
-                android:inputType="textEmailAddress" android:maxLines="1"
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_username"
+                android:maxLines="1"
                 android:singleLine="true"
                 android:layout_marginBottom="10dp"
                 android:textColorHint="#ffffffff"
-                android:textColor="#ffffffff" />
+                android:textColor="#ffffffff"
+                android:inputType="text" />
 
-            <EditText android:id="@+id/password" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:hint="@string/prompt_password"
-                android:imeActionLabel="@string/action_sign_in"
-                android:imeOptions="actionUnspecified" android:inputType="textPassword"
-                android:maxLines="1" android:singleLine="true"
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/prompt_password"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:layout_marginBottom="10dp"
                 android:textColorHint="#ffffffff"
                 android:textColor="#ffffffff" />
@@ -59,20 +66,23 @@
                 android:id="@+id/checkBox"
                 android:layout_gravity="start"
                 android:checked="true"
-                android:textColor="#ffffff" />
+                android:textColor="#ffffff"/>
 
             <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/logged_in"
-                android:id="@+id/checkBox2"
+                android:id="@+id/logged_in"
                 android:layout_gravity="start"
                 android:checked="true"
                 android:textColor="#ffffff" />
 
-            <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
-                android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:layout_marginTop="16dp" android:text="@string/action_sign_in"
+            <Button
+                android:id="@+id/sign_in_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_sign_in"
                 android:textStyle="bold"
                 android:textColor="#ffffffff"
                 android:background="#ff7e51c2" />
