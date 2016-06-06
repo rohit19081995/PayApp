@@ -2,7 +2,9 @@ package com.csmdstudios.payapp;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -36,6 +39,12 @@ public class LoginFragment extends Fragment {
 
     public static final int CONNECTION_TIMEOUT=10000;
     public static final int READ_TIMEOUT=15000;
+    private static final String SAVE_PASSWORD = "SAVE_PASSWORD";
+    private static final String LOGGED_IN = "LOGGED_IN";
+    private String password;
+    private String username;
+    CheckBox savePasswordCheckBox;
+    CheckBox loggedInCheckBox;
 
     public LoginFragment() {
         // Required empty public constructor
@@ -51,14 +60,27 @@ public class LoginFragment extends Fragment {
         LinearLayout linearLayout = (LinearLayout) fragmentLayout.findViewById(R.id.ll2);
         final EditText userText = (EditText) linearLayout.findViewById(R.id.username);
         final EditText passText = (EditText) linearLayout.findViewById(R.id.password);
+        savePasswordCheckBox = (CheckBox) linearLayout.findViewById(R.id.save_password);
+        loggedInCheckBox = (CheckBox) linearLayout.findViewById(R.id.logged_in);
         Button signInButton = (Button) linearLayout.findViewById(R.id.sign_in_button);
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
+
+        if(!sharedPreferences.getBoolean(SAVE_PASSWORD, false)) {
+            loggedInCheckBox.setChecked(false);
+            loggedInCheckBox.setEnabled(false);
+        }
+        else {
+            loggedInCheckBox.setEnabled(true);
+            loggedInCheckBox.setChecked(sharedPreferences.getBoolean(LOGGED_IN, false));
+        }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                final String username = userText.getText().toString();
-                final String password = passText.getText().toString();
+                username = userText.getText().toString();
+                password = passText.getText().toString();
 
                 new AsyncLogin().execute(username,password);
             }
@@ -175,6 +197,15 @@ public class LoginFragment extends Fragment {
                 /* Here launching another activity when login successful. If you persist login state
                 use sharedPreferences of Android. and logout button to clear sharedPreferences.
                  */
+
+
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("USERNAME", username);
+                editor.putString("PASSWORD", password);
+                editor.putBoolean(SAVE_PASSWORD, savePasswordCheckBox.isChecked());
+                editor.putBoolean(LOGGED_IN, loggedInCheckBox.isChecked());
+                editor.apply();
 
                 Log.d("Successful Login", "Successfully logged in");
                 Toast.makeText(getActivity(), "Successfully logged in", Toast.LENGTH_LONG).show();

@@ -11,6 +11,10 @@ import java.security.PrivateKey;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static String getMyPreferences() {
+        return myPreferences;
+    }
+
     private static final String myPreferences = "login details";
 
     @Override
