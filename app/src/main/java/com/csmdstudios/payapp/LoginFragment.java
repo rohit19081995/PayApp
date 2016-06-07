@@ -13,8 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -41,6 +43,7 @@ public class LoginFragment extends Fragment {
     public static final int READ_TIMEOUT=15000;
     private static final String SAVE_PASSWORD = "SAVE_PASSWORD";
     private static final String LOGGED_IN = "LOGGED_IN";
+    private static final String USER_LOGGED_IN  = "USER_LOGGED_IN";
     private String password;
     private String username;
     CheckBox savePasswordCheckBox;
@@ -55,6 +58,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View fragmentLayout = inflater.inflate(R.layout.fragment_login, container, false);
 
         LinearLayout linearLayout = (LinearLayout) fragmentLayout.findViewById(R.id.ll2);
@@ -64,9 +68,11 @@ public class LoginFragment extends Fragment {
         loggedInCheckBox = (CheckBox) linearLayout.findViewById(R.id.logged_in);
         Button signInButton = (Button) linearLayout.findViewById(R.id.sign_in_button);
 
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
+        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
 
-        if(!sharedPreferences.getBoolean(SAVE_PASSWORD, false)) {
+        Boolean savePass = sharedPreferences.getBoolean(SAVE_PASSWORD, false);
+        savePasswordCheckBox.setChecked(savePass);
+        if(!savePass) {
             loggedInCheckBox.setChecked(false);
             loggedInCheckBox.setEnabled(false);
         }
@@ -74,6 +80,30 @@ public class LoginFragment extends Fragment {
             loggedInCheckBox.setEnabled(true);
             loggedInCheckBox.setChecked(sharedPreferences.getBoolean(LOGGED_IN, false));
         }
+
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+        savePasswordCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean("SAVE_PASSWORD", isChecked);
+                editor.apply();
+                if (isChecked) {
+                    loggedInCheckBox.setEnabled(true);
+                }
+                else {
+                    loggedInCheckBox.setChecked(false);
+                    loggedInCheckBox.setEnabled(false);
+                }
+            }
+        });
+
+        loggedInCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                editor.putBoolean("LOGGED_IN", isChecked);
+                editor.apply();
+            }
+        });
 
         signInButton.setOnClickListener(new View.OnClickListener() {
 
@@ -203,8 +233,22 @@ public class LoginFragment extends Fragment {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString("USERNAME", username);
                 editor.putString("PASSWORD", password);
-                editor.putBoolean(SAVE_PASSWORD, savePasswordCheckBox.isChecked());
-                editor.putBoolean(LOGGED_IN, loggedInCheckBox.isChecked());
+                Boolean savePass = savePasswordCheckBox.isChecked();
+                Boolean loggedIn = loggedInCheckBox.isChecked();
+                if (savePass) {
+                    editor.putBoolean(LOGGED_IN, loggedIn);
+                    if (loggedIn) {
+                            editor.putBoolean(USER_LOGGED_IN, true);
+                    }
+                    else {
+                        editor.putBoolean(USER_LOGGED_IN, false);
+                    }
+                }
+                else {
+                    editor.putBoolean(USER_LOGGED_IN, false);
+                }
+                editor.putBoolean(SAVE_PASSWORD, savePass);
+
                 editor.apply();
 
                 Log.d("Successful Login", "Successfully logged in");
@@ -228,4 +272,15 @@ public class LoginFragment extends Fragment {
 
     }
 
+    public static String getUserLoggedIn() {
+        return USER_LOGGED_IN;
+    }
+
+    public static String getSavePassword() {
+        return SAVE_PASSWORD;
+    }
+
+    public static String getLoggedIn() {
+        return LOGGED_IN;
+    }
 }
