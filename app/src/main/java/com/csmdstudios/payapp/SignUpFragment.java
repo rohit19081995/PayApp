@@ -39,6 +39,7 @@ public class SignUpFragment extends Fragment {
 
     private String username;
     private String password;
+    private String email;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -52,6 +53,7 @@ public class SignUpFragment extends Fragment {
         View fragmentLayout = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         final EditText userText = (EditText) fragmentLayout.findViewById(R.id.username);
+        final EditText emailText = (EditText) fragmentLayout.findViewById(R.id.email);
         final EditText passText = (EditText) fragmentLayout.findViewById(R.id.password);
         final EditText confirmPassText = (EditText) fragmentLayout.findViewById(R.id.repeat_password);
         Button signUpButton = (Button) fragmentLayout.findViewById(R.id.sign_up_button);
@@ -63,7 +65,9 @@ public class SignUpFragment extends Fragment {
                 password = passText.getText().toString();
                 if (password.equals(confirmPassText.getText().toString())) {
                     username = userText.getText().toString();
-                    new AsyncLogin().execute(username, password);
+                    email = emailText.getText().toString();
+
+                    new AsyncLogin().execute(username, email, password);
                 }
                 else {
                     Toast.makeText(getActivity(), "Passwords do not match", Toast.LENGTH_LONG).show();
@@ -116,7 +120,8 @@ public class SignUpFragment extends Fragment {
                 // Append parameters to URL
                 Uri.Builder builder = new Uri.Builder()
                         .appendQueryParameter("username", params[0])
-                        .appendQueryParameter("password", params[1]);
+                        .appendQueryParameter("email", params[1])
+                        .appendQueryParameter("password", params[2]);
                 String query = builder.build().getEncodedQuery();
 
                 // Open connection for sending data
@@ -185,7 +190,12 @@ public class SignUpFragment extends Fragment {
                 Log.d("User added", "Signed up successfully");
                 Toast.makeText(getActivity(), "Signed up successfully", Toast.LENGTH_LONG).show();
 
-            }else if (result.equalsIgnoreCase("user already exists")){
+            } else if (result.equalsIgnoreCase("email registered")) {
+
+                Log.d("Existing email", "Email Already exits");
+                Toast.makeText(getActivity(), "That Email ID has already been registered", Toast.LENGTH_LONG).show();
+
+            } else if (result.equalsIgnoreCase("user already exists")){
 
                 // If username and password does not match display a error message
                 Log.d("Existing user", "User Already exits");
