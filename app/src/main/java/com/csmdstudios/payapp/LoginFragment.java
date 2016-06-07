@@ -23,6 +23,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -65,12 +66,13 @@ public class LoginFragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View fragmentLayout = inflater.inflate(R.layout.fragment_login, container, false);
 
-        LinearLayout linearLayout = (LinearLayout) fragmentLayout.findViewById(R.id.ll2);
+        LinearLayout linearLayout = (LinearLayout) fragmentLayout.findViewById(R.id.sign_in_layout);
         final EditText userText = (EditText) linearLayout.findViewById(R.id.username);
         final EditText passText = (EditText) linearLayout.findViewById(R.id.password);
         savePasswordCheckBox = (CheckBox) linearLayout.findViewById(R.id.save_password);
         loggedInCheckBox = (CheckBox) linearLayout.findViewById(R.id.logged_in);
         Button signInButton = (Button) linearLayout.findViewById(R.id.sign_in_button);
+        TextView signUpText = (TextView) fragmentLayout.findViewById(R.id.sign_up_text_view);
 
         final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
 
@@ -81,6 +83,8 @@ public class LoginFragment extends Fragment {
             loggedInCheckBox.setEnabled(false);
         }
         else {
+            userText.setText(sharedPreferences.getString("USERNAME", ""));
+            passText.setText(sharedPreferences.getString("PASSWORD", ""));
             loggedInCheckBox.setEnabled(true);
             loggedInCheckBox.setChecked(sharedPreferences.getBoolean(LOGGED_IN, false));
         }
@@ -119,6 +123,18 @@ public class LoginFragment extends Fragment {
                 new AsyncLogin().execute(username,password);
             }
         });
+
+        signUpText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getActivity().getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                SignUpFragment signUpFragment = new SignUpFragment();
+                fragmentTransaction.replace(R.id.plain_layout, signUpFragment, "SIGN_UP_FRAGMENT");
+                fragmentTransaction.commit();
+            }
+        });
         // Inflate the layout for this fragment
         return fragmentLayout;
     }
@@ -144,7 +160,7 @@ public class LoginFragment extends Fragment {
             try {
 
                 // Enter URL address where your php file resides
-                url = new URL("http://192.168.1.4/webservice/login.inc.php");
+                url = new URL(getString(R.string.login_url));
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block

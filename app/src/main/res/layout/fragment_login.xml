@@ -26,7 +26,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/ll2"
+        android:id="@+id/sign_in_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sign_up"
-            android:id="@+id/signUpTextView"
+            android:id="@+id/sign_up_text_view"
             android:autoLink="web"
             android:textColor="#ffffffff" />
     </LinearLayout>

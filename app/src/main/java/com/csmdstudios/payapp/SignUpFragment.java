@@ -1,5 +1,7 @@
 package com.csmdstudios.payapp;
 
+
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
@@ -7,11 +9,15 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.util.Log;
-import android.view.WindowManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
@@ -24,44 +30,53 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.PrivateKey;
 
-public class MainActivity extends AppCompatActivity {
 
-    public static String getMyPreferences() {
-        return myPreferences;
+/**
+ * A simple {@link Fragment} subclass.
+ */
+public class SignUpFragment extends Fragment {
+
+    private String username;
+    private String password;
+
+    public SignUpFragment() {
+        // Required empty public constructor
     }
 
-    private static final String myPreferences = "login details";
-    private FragmentTransaction fragmentTransaction;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
-        SharedPreferences sharedPreferences = this.getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
-        Boolean loggedIn = sharedPreferences.getBoolean(LoginFragment.getUserLoggedIn(), false);
+        View fragmentLayout = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
-        FragmentManager fragmentManager = getFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
+        final EditText userText = (EditText) fragmentLayout.findViewById(R.id.username);
+        final EditText passText = (EditText) fragmentLayout.findViewById(R.id.password);
+        final EditText confirmPassText = (EditText) fragmentLayout.findViewById(R.id.repeat_password);
+        Button signUpButton = (Button) fragmentLayout.findViewById(R.id.sign_up_button);
 
-        if(!loggedIn) {
-            //load the login screen
-            LoginFragment loginFragment = new LoginFragment();
-            fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
-            fragmentTransaction.commit();
-        }
-        else {
-            //Check if login details provided are still valid
-            new AsyncLogin().execute(sharedPreferences.getString("USERNAME", ""), sharedPreferences.getString("PASSWORD", ""));
-            //load the user's profile
-        }
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                password = passText.getText().toString();
+                if (password.equals(confirmPassText.getText().toString())) {
+                    username = userText.getText().toString();
+                    new AsyncLogin().execute(username, password);
+                }
+                else {
+                    Toast.makeText(getActivity(), "Passwords do not match", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        // Inflate the layout for this fragment
+        return fragmentLayout;
     }
 
     private class AsyncLogin extends AsyncTask<String, String, String>
     {
-        ProgressDialog pdLoading = new ProgressDialog(MainActivity.this);
+        ProgressDialog pdLoading = new ProgressDialog(getActivity());
         HttpURLConnection conn;
         URL url = null;
 
@@ -80,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
             try {
 
                 // Enter URL address where your php file resides
-                url = new URL(getString(R.string.login_url));
+                url = new URL(getString(R.string.sign_up_url));
 
             } catch (MalformedURLException e) {
                 // TODO Auto-generated catch block
@@ -162,38 +177,30 @@ public class MainActivity extends AppCompatActivity {
 
             pdLoading.dismiss();
 
-            if(result.equalsIgnoreCase("true"))
+            if(result.equalsIgnoreCase("user added"))
             {
                 /* Here launching another activity when login successful. If you persist login state
                 use sharedPreferences of Android. and logout button to clear sharedPreferences.
                  */
-                LoggedInFragment loggedInFragment = new LoggedInFragment();
-                fragmentTransaction.add(R.id.plain_layout, loggedInFragment, "LOGGED_IN_FRAGMENT");
-                Log.d("Verification Success", "Credentials verified");
-                Toast.makeText(MainActivity.this, "Credentials Verified", Toast.LENGTH_LONG).show();
+                Log.d("User added", "Signed up successfully");
+                Toast.makeText(getActivity(), "Signed up successfully", Toast.LENGTH_LONG).show();
 
-            }else if (result.equalsIgnoreCase("false")){
+            }else if (result.equalsIgnoreCase("user already exists")){
 
                 // If username and password does not match display a error message
-                LoginFragment loginFragment = new LoginFragment();
-                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
-                Log.d("Invalid username", "Invalid email or password");
-                Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_LONG).show();
+                Log.d("Existing user", "User Already exits");
+                Toast.makeText(getActivity(), "That username is taken", Toast.LENGTH_LONG).show();
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
-                LoginFragment loginFragment = new LoginFragment();
-                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem.");
-                Toast.makeText(MainActivity.this, "OOPs! Something went wrong. Connection Problem." + result, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem." + result, Toast.LENGTH_LONG).show();
 
             } else {
-                LoginFragment loginFragment = new LoginFragment();
-                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("huh, why?", result);
             }
-            fragmentTransaction.commit();
         }
 
     }
+
 }
