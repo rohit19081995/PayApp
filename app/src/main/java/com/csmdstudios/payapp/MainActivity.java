@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,38 +33,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static final String myPreferences = "login details";
-    private static Boolean loginCredentialsValid = false;
+    private static Boolean loginCredentialsValid = null;
+    private FragmentTransaction fragmentTransaction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(myPreferences, Context.MODE_PRIVATE);
         Boolean loggedIn = sharedPreferences.getBoolean(LoginFragment.getUserLoggedIn(), false);
 
         FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction = fragmentManager.beginTransaction();
 
         if(!loggedIn) {
             //load the login screen
             LoginFragment loginFragment = new LoginFragment();
             fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
+            fragmentTransaction.commit();
         }
         else {
             //Check if login details provided are still valid
             new AsyncLogin().execute(sharedPreferences.getString("USERNAME", ""), sharedPreferences.getString("PASSWORD", ""));
             //load the user's profile
-            if (loginCredentialsValid) {
-
-            }
-            else {
-                LoginFragment loginFragment = new LoginFragment();
-                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
-            }
         }
-
-        fragmentTransaction.commit();
     }
 
     private class AsyncLogin extends AsyncTask<String, String, String>
@@ -174,25 +168,32 @@ public class MainActivity extends AppCompatActivity {
                 /* Here launching another activity when login successful. If you persist login state
                 use sharedPreferences of Android. and logout button to clear sharedPreferences.
                  */
-                loginCredentialsValid = true;
-
-                Log.d("Verification Sucess", "Credentials verified");
-                //Toast.makeText(MainActivity.this, "Credentials Verified", Toast.LENGTH_LONG).show();
+                LoggedInFragment loggedInFragment = new LoggedInFragment();
+                fragmentTransaction.add(R.id.plain_layout, loggedInFragment, "LOGGED_IN_FRAGMENT");
+                Log.d("Verification Success", "Credentials verified");
+                Toast.makeText(MainActivity.this, "Credentials Verified", Toast.LENGTH_LONG).show();
 
             }else if (result.equalsIgnoreCase("false")){
 
                 // If username and password does not match display a error message
+                LoginFragment loginFragment = new LoginFragment();
+                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("Invalid username", "Invalid email or password");
                 Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_LONG).show();
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
+                LoginFragment loginFragment = new LoginFragment();
+                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem.");
                 Toast.makeText(MainActivity.this, "OOPs! Something went wrong. Connection Problem." + result, Toast.LENGTH_LONG).show();
 
             } else {
+                LoginFragment loginFragment = new LoginFragment();
+                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("huh, why?", result);
             }
+            fragmentTransaction.commit();
         }
 
     }

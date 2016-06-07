@@ -1,6 +1,7 @@
 package com.csmdstudios.payapp;
 
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -9,11 +10,14 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -251,8 +255,19 @@ public class LoginFragment extends Fragment {
 
                 editor.apply();
 
+                FragmentManager fragmentManager = getActivity().getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                LoggedInFragment loggedInFragment = new LoggedInFragment();
+                fragmentTransaction.replace(R.id.plain_layout, loggedInFragment, "LOGGED_IN_FRAGMENT");
+
                 Log.d("Successful Login", "Successfully logged in");
                 Toast.makeText(getActivity(), "Successfully logged in", Toast.LENGTH_LONG).show();
+
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
+                fragmentTransaction.commit();
 
             }else if (result.equalsIgnoreCase("false")){
 
