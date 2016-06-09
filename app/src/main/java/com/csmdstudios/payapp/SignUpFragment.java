@@ -2,10 +2,12 @@ package com.csmdstudios.payapp;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -188,7 +190,36 @@ public class SignUpFragment extends Fragment {
                 use sharedPreferences of Android. and logout button to clear sharedPreferences.
                  */
                 Log.d("User added", "Signed up successfully");
-                Toast.makeText(getActivity(), "Signed up successfully", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getActivity(), "Signed up successfully", Toast.LENGTH_LONG).show();
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                alertDialogBuilder.setNeutralButton(R.string.ok_text, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        LoginFragment loginFragment = new LoginFragment();
+                        fragmentTransaction.replace(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
+
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("USERNAME", username);
+                        editor.putString("PASSWORD", password);
+                        editor.putBoolean(LoginFragment.getLoggedIn(), true);
+                        editor.putBoolean(LoginFragment.getSavePassword(), true);
+                        editor.putBoolean(LoginFragment.getUserLoggedIn(), false);
+                        editor.apply();
+                        fragmentTransaction.commit();
+
+                    }
+                });
+
+                alertDialogBuilder.setTitle(R.string.email_alert_title);
+                alertDialogBuilder.setMessage(getString(R.string.email_alert_message1)+ "" + email + getString(R.string.email_alert_message2));
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
 
             } else if (result.equalsIgnoreCase("email registered")) {
 
@@ -203,8 +234,13 @@ public class SignUpFragment extends Fragment {
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
-                Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem.");
-                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem." + result, Toast.LENGTH_LONG).show();
+                Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem."+result);
+                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
+
+            } else if (result.equalsIgnoreCase("mail failed")) {
+
+                Log.d("Mail failed", "The email ID you entered might not exist."+result);
+                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
 
             } else {
                 Log.d("huh, why?", result);

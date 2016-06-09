@@ -19,6 +19,10 @@
     <string name="sign_up_message">SIGN UP</string>
     <string name="action_sign_up">Sign Up</string>
     <string name="prompt_email">Email</string>
+    <string name="ok_text">OK</string>
+    <string name="email_alert_title">Signed up Successfully</string>
+    <string name="email_alert_message1">We\'ve sent and email to </string>
+    <string name="email_alert_message2">.\nPlease click on the confirmation link in the email to verify your account.</string>
 
     <!-- URLs -->
     <string name="login_url">http://192.168.1.5/webservice/login.inc.php</string>

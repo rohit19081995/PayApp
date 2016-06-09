@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 
 
@@ -285,11 +284,16 @@ public class LoginFragment extends Fragment {
 
                 fragmentTransaction.commit();
 
-            }else if (result.equalsIgnoreCase("false")){
+            } else if (result.equalsIgnoreCase("false")){
 
                 // If username and password does not match display a error message
                 Log.d("Invalid username", "Invalid email or password");
                 Toast.makeText(getActivity(), "Invalid username or password", Toast.LENGTH_LONG).show();
+
+            } else if (result.equalsIgnoreCase("verify")){
+
+                Log.d("Not verified", "user has not verified email");
+                Toast.makeText(getActivity(), "Please verify your account.", Toast.LENGTH_LONG).show();
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
