@@ -178,18 +178,18 @@ public class MainActivity extends AppCompatActivity {
                 LoginFragment loginFragment = new LoginFragment();
                 fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("Invalid username", "Invalid email or password");
-                Toast.makeText(MainActivity.this, "Invalid username or password", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "The username or password is not valid anymore.\nPlease register again.", Toast.LENGTH_LONG).show();
 
             } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
 
                 LoginFragment loginFragment = new LoginFragment();
                 fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
                 Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem.");
-                Toast.makeText(MainActivity.this, "OOPs! Something went wrong. Connection Problem." + result, Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
 
             } else {
-                LoginFragment loginFragment = new LoginFragment();
-                fragmentTransaction.add(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
+
+                Toast.makeText(MainActivity.this, "OOPs! Something went wrong.", Toast.LENGTH_LONG).show();
                 Log.d("huh, why?", result);
             }
             fragmentTransaction.commit();
