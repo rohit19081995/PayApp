@@ -1,37 +1,15 @@
 package com.csmdstudios.payapp;
 
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 /**
@@ -54,6 +32,9 @@ public class SignUpFragment extends Fragment {
 
         View fragmentLayout = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
+        FragmentManager fragmentManager = getActivity().getFragmentManager();
+        final FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         final EditText userText = (EditText) fragmentLayout.findViewById(R.id.username);
         final EditText emailText = (EditText) fragmentLayout.findViewById(R.id.email);
         final EditText passText = (EditText) fragmentLayout.findViewById(R.id.password);
@@ -69,7 +50,7 @@ public class SignUpFragment extends Fragment {
                     username = userText.getText().toString();
                     email = emailText.getText().toString();
 
-                    new AsyncLogin().execute(username, email, password);
+                    new AsyncLogin(getActivity(), getString(R.string.sign_up_url), fragmentTransaction, SignUpFragment.this, AsyncLogin.ActionToPerform.SIGN_UP).execute(username, email, password);
                 }
                 else {
                     Toast.makeText(getActivity(), "Passwords do not match", Toast.LENGTH_LONG).show();
@@ -80,173 +61,7 @@ public class SignUpFragment extends Fragment {
         return fragmentLayout;
     }
 
-    private class AsyncLogin extends AsyncTask<String, String, String>
-    {
-        ProgressDialog pdLoading = new ProgressDialog(getActivity());
-        HttpURLConnection conn;
-        URL url = null;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            //this method will be running on UI thread
-            pdLoading.setMessage("\tLoading...");
-            pdLoading.setCancelable(false);
-            pdLoading.show();
-
-        }
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-
-                // Enter URL address where your php file resides
-                url = new URL(getString(R.string.sign_up_url));
-
-            } catch (MalformedURLException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-                return "Malformed URL exception";
-            }
-            try {
-                // Setup HttpURLConnection class to send and receive data from php and mysql
-                conn = (HttpURLConnection) url.openConnection();
-                conn.setReadTimeout(LoginFragment.READ_TIMEOUT);
-                conn.setConnectTimeout(LoginFragment.CONNECTION_TIMEOUT);
-                conn.setRequestMethod("POST");
-
-                // setDoInput and setDoOutput method depict handling of both send and receive
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-
-                // Append parameters to URL
-                Uri.Builder builder = new Uri.Builder()
-                        .appendQueryParameter("username", params[0])
-                        .appendQueryParameter("email", params[1])
-                        .appendQueryParameter("password", params[2]);
-                String query = builder.build().getEncodedQuery();
-
-                // Open connection for sending data
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                writer.write(query);
-                writer.flush();
-                writer.close();
-                os.close();
-                //conn.connect();
-
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return "Output Stream exception";
-            }
-
-            try {
-
-                int response_code = conn.getResponseCode();
-
-                // Check if successful connection made
-                if (response_code == HttpURLConnection.HTTP_OK) {
-
-                    // Read data sent from server
-                    InputStream input = conn.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                    StringBuilder result = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        result.append(line);
-                    }
-
-                    // Pass data to onPostExecute method
-                    return(result.toString());
-
-                }else{
-
-                    return("unsuccessful");
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                return "Input Stream exception";
-            } finally {
-                conn.disconnect();
-            }
-
-
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            //this method will be running on UI thread
-
-            pdLoading.dismiss();
-
-            if(result.equalsIgnoreCase("user added"))
-            {
-                /* Here launching another activity when login successful. If you persist login state
-                use sharedPreferences of Android. and logout button to clear sharedPreferences.
-                 */
-                Log.d("User added", "Signed up successfully");
-                //Toast.makeText(getActivity(), "Signed up successfully", Toast.LENGTH_LONG).show();
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-                alertDialogBuilder.setNeutralButton(R.string.ok_text, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        FragmentManager fragmentManager = getFragmentManager();
-                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                        LoginFragment loginFragment = new LoginFragment();
-                        fragmentTransaction.replace(R.id.plain_layout, loginFragment, "LOGIN_FRAGMENT");
-
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(MainActivity.getMyPreferences(), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString("USERNAME", username);
-                        editor.putString("PASSWORD", password);
-                        editor.putBoolean(LoginFragment.getLoggedIn(), true);
-                        editor.putBoolean(LoginFragment.getSavePassword(), true);
-                        editor.putBoolean(LoginFragment.getUserLoggedIn(), false);
-                        editor.apply();
-                        fragmentTransaction.commit();
-
-                    }
-                });
-
-                alertDialogBuilder.setTitle(R.string.email_alert_title);
-                alertDialogBuilder.setMessage(getString(R.string.email_alert_message1)+ "" + email + getString(R.string.email_alert_message2));
-
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-
-            } else if (result.equalsIgnoreCase("email registered")) {
-
-                Log.d("Existing email", "Email Already exits");
-                Toast.makeText(getActivity(), "That Email ID has already been registered", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("user already exists")){
-
-                // If username and password does not match display a error message
-                Log.d("Existing user", "User Already exits");
-                Toast.makeText(getActivity(), "That username is taken", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("exception") || result.equalsIgnoreCase("unsuccessful")) {
-
-                Log.d("Connection problem", "OOPs! Something went wrong. Connection Problem."+result);
-                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
-
-            } else if (result.equalsIgnoreCase("mail failed")) {
-
-                Log.d("Mail failed", "The email ID you entered might not exist."+result);
-                Toast.makeText(getActivity(), "OOPs! Something went wrong. Connection Problem.", Toast.LENGTH_LONG).show();
-
-            } else {
-                Log.d("huh, why?", result);
-            }
-        }
-
+    public String getEmail() {
+        return email;
     }
-
 }
