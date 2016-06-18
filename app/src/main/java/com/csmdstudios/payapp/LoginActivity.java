@@ -123,7 +123,6 @@ public class LoginActivity extends AppCompatActivity implements
         };
 
         password = (TextInputLayout) findViewById(R.id.password_login_layout);
-        password.setError(getString(R.string.password_length_exceeded));
         password.getEditText().setOnFocusChangeListener(new PasswordFocusListener(getBaseContext(), password));
 
         // Email and Password authentication
