@@ -6,7 +6,18 @@
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="login_button">Login</string>
-    
+    <string name="logout">Logout</string>
+    <string name="sign_up">Don\'t have an account? Create one</string>
+    <string name="forgot_password">Forgot Password</string>
+
+    <!-- Sign up screen -->
+    <string name="sign_up_text">Sign up</string>
+    <string name="name_hint">Full Name</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="sign_up_button">Sign Up</string>
+    <string name="password_match_error">Passwords do not match</string>
+    <string name="password_length_exceeded">The password should have at least 8 characters</string>
+
     <string name="facebook_app_id">293056337701704</string>
 
     <!-- Firebase -->
