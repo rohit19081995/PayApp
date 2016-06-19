@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +29,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,15 +39,14 @@ public class LoginActivity extends AppCompatActivity implements
         GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
 
 
+    public static final String EMAIL_EXTRA = "Email";
     // Firebase instance variables
     private FirebaseAuth mAuth;
+    private AuthCredential credential;
 
-    // Google variables
-    private SignInButton mSignInButton;
     private GoogleApiClient mGoogleApiClient;
 
     // Facebook variables
-    private LoginButton loginButton;
     private CallbackManager mCallbackManager;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -65,10 +64,21 @@ public class LoginActivity extends AppCompatActivity implements
         // Initialize FirebaseAuth
         mAuth = FirebaseAuth.getInstance();
 
-        mSignInButton = (SignInButton) findViewById(R.id.google_button);
-        mSignInButton.setColorScheme(SignInButton.COLOR_DARK);
+        SignInButton mSignInButton = (SignInButton) findViewById(R.id.google_button);
+        if (mSignInButton != null) {
+            mSignInButton.setColorScheme(SignInButton.COLOR_DARK);
 
-        mSignInButton.setOnClickListener(this);
+            for (int i = 0; i < mSignInButton.getChildCount(); i++) {
+                View v = mSignInButton.getChildAt(i);
+
+                if (v instanceof TextView) {
+                    TextView tv = (TextView) v;
+                    tv.setText(getString(R.string.google_button_text));
+                }
+            }
+
+            mSignInButton.setOnClickListener(this);
+        }
 
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -83,26 +93,29 @@ public class LoginActivity extends AppCompatActivity implements
         // Configure Facebook Sign In
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton fLoginButton = (LoginButton) findViewById(R.id.facebook_button);
-        fLoginButton.setReadPermissions("email", "public_profile");
-        fLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                handleFacebookAccessToken(loginResult.getAccessToken());
-            }
+        if (fLoginButton != null) {
+            fLoginButton.setReadPermissions("email", "public_profile");
 
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "facebook:onCancel");
-                // ...
-            }
+            fLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                    handleFacebookAccessToken(loginResult.getAccessToken());
+                }
 
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "facebook:onError", error);
-                // ...
-            }
-        });
+                @Override
+                public void onCancel() {
+                    Log.d(TAG, "facebook:onCancel");
+                    // ...
+                }
+
+                @Override
+                public void onError(FacebookException error) {
+                    Log.d(TAG, "facebook:onError", error);
+                    // ...
+                }
+            });
+        }
 
         emailLoginComplete = new OnCompleteListener<AuthResult>() {
             @Override
@@ -127,12 +140,14 @@ public class LoginActivity extends AppCompatActivity implements
 
         // Email and Password authentication
         Button loginButton = (Button) findViewById(R.id.login_button);
-        loginButton.setOnClickListener(this);
+        if (loginButton != null) {
+            loginButton.setOnClickListener(this);
+        }
 
         // Firebase auth listener
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
@@ -148,6 +163,11 @@ public class LoginActivity extends AppCompatActivity implements
         };
 
         // Forgot Password
+        TextView forgotPassword = (TextView) findViewById(R.id.forgot_password);
+
+        if (forgotPassword != null) {
+            forgotPassword.setOnClickListener(this);
+        }
 
         // Sign up
         TextView signUp = (TextView) findViewById(R.id.sign_up);
@@ -170,15 +190,21 @@ public class LoginActivity extends AppCompatActivity implements
             case R.id.sign_up:
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
                 break;
+            case R.id.forgot_password:
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                intent.putExtra(EMAIL_EXTRA, ((EditText) findViewById(R.id.email)).getText().toString());
+                startActivity(intent);
+                break;
+
         }
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            // An unresolvable error has occurred and Google APIs (including Sign-In) will not
-            // be available.
-            Log.d(TAG, "onConnectionFailed:" + connectionResult);
-            Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
+        // An unresolvable error has occurred and Google APIs (including Sign-In) will not
+        // be available.
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -204,7 +230,7 @@ public class LoginActivity extends AppCompatActivity implements
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGooogle:" + acct.getId());
-        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -234,13 +260,15 @@ public class LoginActivity extends AppCompatActivity implements
         String userEmail = ((EditText) findViewById(R.id.email)).getText().toString();
         String userPass = password.getEditText().getText().toString();
 
+        credential = EmailAuthProvider.getCredential(userEmail, userPass);
         mAuth.signInWithEmailAndPassword(userEmail, userPass).addOnCompleteListener(LoginActivity.this, emailLoginComplete);
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
         Log.d(TAG, "handleFacebookAccessToken:" + token);
 
-        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        credential = FacebookAuthProvider.getCredential(token.getToken());
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -253,10 +281,10 @@ public class LoginActivity extends AppCompatActivity implements
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                        } else {
                         }
                     }
                 });
+
     }
 
     @Override

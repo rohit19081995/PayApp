@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class LoggedInActivity extends AppCompatActivity {
@@ -21,11 +22,17 @@ public class LoggedInActivity extends AppCompatActivity {
             logoutButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    FirebaseAuth.getInstance().signOut();
-                    startActivity(new Intent(LoggedInActivity.this, LoginActivity.class));
-                    finish();
+                    logout();
                 }
             });
         }
+    }
+
+    public void logout() {
+
+        LoginManager.getInstance().logOut();
+        FirebaseAuth.getInstance().signOut();
+        startActivity(new Intent(LoggedInActivity.this, LoginActivity.class));
+        finish();
     }
 }
