@@ -11,7 +11,7 @@ import android.view.View;
 public class PasswordFocusListener implements View.OnFocusChangeListener{
 
 
-    private static final int MIN_PASSWORD_LENGTH = 8;
+    public static final int MIN_PASSWORD_LENGTH = 8;
     private TextInputLayout password;
     private Context context;
 

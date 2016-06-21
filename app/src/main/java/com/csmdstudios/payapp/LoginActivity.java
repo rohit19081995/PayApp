@@ -192,7 +192,7 @@ public class LoginActivity extends AppCompatActivity implements
                 break;
             case R.id.forgot_password:
                 Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
-                intent.putExtra(EMAIL_EXTRA, ((EditText) findViewById(R.id.email)).getText().toString());
+                intent.putExtra(EMAIL_EXTRA, ((EditText) findViewById(R.id.emailid)).getText().toString());
                 startActivity(intent);
                 break;
 
@@ -257,7 +257,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void emailSignIn() {
-        String userEmail = ((EditText) findViewById(R.id.email)).getText().toString();
+        String userEmail = ((EditText) findViewById(R.id.emailid)).getText().toString();
         String userPass = password.getEditText().getText().toString();
 
         credential = EmailAuthProvider.getCredential(userEmail, userPass);

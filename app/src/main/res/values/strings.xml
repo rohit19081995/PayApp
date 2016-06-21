@@ -24,5 +24,7 @@
 
     <!-- Firebase -->
     <string name="firebase_client_id">374404750020-jiadppdnvnf1h64turr58at3pv82rdd7.apps.googleusercontent.com</string>
+    <string name="no_name_entered">Please enter a name</string>
+    <string name="invalid_email">Invalid Email</string>
 
 </resources>
