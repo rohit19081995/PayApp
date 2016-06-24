@@ -98,18 +98,19 @@
 
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/google_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"/>
 
             <com.facebook.login.widget.LoginButton
                 android:id="@+id/facebook_button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="5dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dp" />
+                android:layout_marginTop="10dp"/>
 
         </LinearLayout>
 

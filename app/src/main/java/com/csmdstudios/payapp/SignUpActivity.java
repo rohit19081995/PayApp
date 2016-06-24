@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -55,7 +57,7 @@ public class SignUpActivity extends AppCompatActivity {
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     // User is signed in
                     mAuth.removeAuthStateListener(mAuthListener);
@@ -67,6 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     if (task.isSuccessful()) {
+                                        addNewUser(user);
                                         Log.d(TAG, "User profile updated.");
                                         startActivity(new Intent(SignUpActivity.this, LoggedInActivity.class));
                                         finish();
@@ -192,5 +195,20 @@ public class SignUpActivity extends AppCompatActivity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    public static void addNewUser(FirebaseUser user) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference mRef = database.getReference(user.getUid() + "/details");
+        mRef.child("name").setValue(user.getDisplayName());
+        mRef.child("email").setValue(user.getEmail());
+        if (user.getPhotoUrl() != null)
+            mRef.child("pic_url").setValue(user.getPhotoUrl().toString());
+        mRef.child("owes").setValue(0);
+        mRef = database.getReference("users/" + user.getUid());
+        mRef.child("name").setValue(user.getDisplayName());
+        mRef.child("email").setValue(user.getEmail());
+        if (user.getPhotoUrl() != null)
+            mRef.child("pic_url").setValue(user.getPhotoUrl().toString());
     }
 }
