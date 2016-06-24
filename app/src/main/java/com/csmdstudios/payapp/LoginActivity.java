@@ -51,7 +51,7 @@ public class LoginActivity extends AppCompatActivity implements
     private FirebaseAuth.AuthStateListener mAuthListener;
 
     private TextInputLayout password;
-    OnCompleteListener emailLoginComplete;
+    private OnCompleteListener emailLoginComplete;
 
     private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -126,6 +126,11 @@ public class LoginActivity extends AppCompatActivity implements
                 // the auth state listener will be notified and logic to handle the
                 // signed in user can be handled in the listener.
                 if (!task.isSuccessful()) {
+                    if (task.getException() != null) {
+                        Log.d(TAG, task.getException().toString());
+                        Toast.makeText(LoginActivity.this, task.getException().toString().split(":",2)[1],
+                                Toast.LENGTH_SHORT).show();
+                    }
                     Log.w(TAG, "signInWithEmail", task.getException());
                     Toast.makeText(LoginActivity.this, "Authentication failed.",
                             Toast.LENGTH_SHORT).show();
@@ -241,6 +246,11 @@ public class LoginActivity extends AppCompatActivity implements
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            if (task.getException() != null) {
+                                Log.d(TAG, task.getException().toString());
+                                Toast.makeText(LoginActivity.this, task.getException().toString().split(":",2)[1],
+                                        Toast.LENGTH_SHORT).show();
+                            }
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -279,6 +289,11 @@ public class LoginActivity extends AppCompatActivity implements
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
                         if (!task.isSuccessful()) {
+                            if (task.getException() != null) {
+                                Log.d(TAG, task.getException().toString());
+                                Toast.makeText(LoginActivity.this, task.getException().toString().split(":",2)[1],
+                                        Toast.LENGTH_SHORT).show();
+                            }
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }

@@ -1,5 +1,6 @@
 package com.csmdstudios.payapp;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
@@ -17,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
@@ -25,11 +27,12 @@ public class SignUpActivity extends AppCompatActivity {
     private static final String TAG = "SignUpActivity";
 
     // Firebase Initialisation
-    FirebaseAuth mAuth;
-    TextInputLayout password;
-    TextInputLayout confirmPassword;
-    TextInputLayout name;
-    TextInputLayout email;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private TextInputLayout password;
+    private TextInputLayout confirmPassword;
+    private TextInputLayout name;
+    private TextInputLayout email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,37 @@ public class SignUpActivity extends AppCompatActivity {
         Button signUp = (Button) findViewById(R.id.sign_up_button);
 
         mAuth = FirebaseAuth.getInstance();
+        // Firebase auth listener
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    mAuth.removeAuthStateListener(mAuthListener);
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setDisplayName(((EditText) findViewById(R.id.name)).getText().toString())
+                            .build();
+                    user.updateProfile(profileUpdates)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Log.d(TAG, "User profile updated.");
+                                        startActivity(new Intent(SignUpActivity.this, LoggedInActivity.class));
+                                        finish();
+                                    }
+                                }
+                            });
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
 
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
+                // ...
+            }
+        };
 
 
 
@@ -100,24 +133,15 @@ public class SignUpActivity extends AppCompatActivity {
                 // the auth state listener will be notified and logic to handle the
                 // signed in user can be handled in the listener.
                 if (!task.isSuccessful()) {
-                    Toast.makeText(SignUpActivity.this, "Authentication failed.",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    FirebaseUser newUser = mAuth.getCurrentUser();
-                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                            .setDisplayName(((EditText) findViewById(R.id.name)).getText().toString()).build();
-                    newUser.updateProfile(profileUpdates)
-                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()) {
-                                        Log.d(TAG, "User profile updated.");
-                                    }
-                                }
-                            });
+                    if (task.getException() != null) {
+                        Log.d(TAG, task.getException().toString());
+                        Toast.makeText(SignUpActivity.this, task.getException().toString().split(":",2)[1],
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
-
-                // ...
             }
         };
         signUp.setOnClickListener(new View.OnClickListener() {
@@ -125,7 +149,8 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (formValidate()) {
                     // Create the user
-                    mAuth.createUserWithEmailAndPassword(((EditText) findViewById(R.id.email_signup)).getText().toString(), password.getEditText().getText().toString())
+                    mAuth.createUserWithEmailAndPassword(((EditText) findViewById(R.id.email_signup)).getText().toString(),
+                            password.getEditText().getText().toString())
                             .addOnCompleteListener(SignUpActivity.this, signUpComplete);
                 } else {
                     // Tell the user what is wrong
@@ -153,5 +178,19 @@ public class SignUpActivity extends AppCompatActivity {
             result = false;
         }
         return result;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }

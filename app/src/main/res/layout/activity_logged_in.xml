@@ -40,4 +40,12 @@
         android:id="@+id/name"
         android:layout_above="@+id/emailid"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="databse test"
+        android:id="@+id/data_button"
+        android:layout_below="@+id/logout_button"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>
