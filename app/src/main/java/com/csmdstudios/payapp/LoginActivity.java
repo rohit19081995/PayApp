@@ -1,5 +1,6 @@
 package com.csmdstudios.payapp;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -191,7 +192,9 @@ public class LoginActivity extends AppCompatActivity implements
                 googleSignIn();
                 break;
             case R.id.login_button:
-                emailSignIn();
+                //emailSignIn();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                new AddTransactionFragment().show(fragmentTransaction, TAG);
                 break;
             case R.id.sign_up:
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));

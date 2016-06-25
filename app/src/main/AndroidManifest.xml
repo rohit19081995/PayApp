@@ -29,7 +29,8 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".LoggedInActivity" />
-        <activity android:name=".SignUpActivity"
+        <activity
+            android:name=".SignUpActivity"
             android:label="@string/sign_up_text"
             android:windowSoftInputMode="adjustResize"
             android:parentActivityName="com.csmdstudios.payapp.LoginActivity"/>

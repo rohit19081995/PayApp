@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
+    private static final int MIN_NAME_LENGTH = 3;
 
     // Firebase Initialisation
     private FirebaseAuth mAuth;
@@ -170,7 +171,7 @@ public class SignUpActivity extends AppCompatActivity {
         if(TextUtils.isEmpty(target) || !android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches()) {
             email.setError(getString(R.string.invalid_email));
             result = false;
-        } if (name.getEditText().getText().length() < 1) {
+        } if (name.getEditText().getText().length() < MIN_NAME_LENGTH) {
             name.setError(getString(R.string.no_name_entered));
             result = false;
         } if (password.getEditText().getText().length() < PasswordFocusListener.MIN_PASSWORD_LENGTH) {
