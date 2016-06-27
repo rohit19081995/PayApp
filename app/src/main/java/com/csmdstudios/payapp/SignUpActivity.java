@@ -87,7 +87,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         };
 
-
+        // Add progress bar. people tend to press sign up twice
 
         // set textfield errors
         password = (TextInputLayout) findViewById(R.id.password_signup_layout);
@@ -208,6 +208,7 @@ public class SignUpActivity extends AppCompatActivity {
         mRef.child("owes").setValue(0);
         mRef = database.getReference("users/" + user.getUid());
         mRef.child("name").setValue(user.getDisplayName());
+        mRef.child("name_search").setValue(user.getDisplayName().toLowerCase());
         mRef.child("email").setValue(user.getEmail());
         if (user.getPhotoUrl() != null)
             mRef.child("pic_url").setValue(user.getPhotoUrl().toString());

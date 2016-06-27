@@ -188,6 +188,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            // Animate these
             case R.id.google_button:
                 googleSignIn();
                 break;

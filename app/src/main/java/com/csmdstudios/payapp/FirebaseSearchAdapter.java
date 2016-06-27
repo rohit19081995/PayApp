@@ -15,11 +15,13 @@
 package com.csmdstudios.payapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ProgressBar;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +60,7 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
     protected Activity mActivity;
     Query mRef;
     FirebaseArray mSnapshots;
+    private ProgressBar mLoadingIndicator;
 
 
     /**
@@ -66,10 +69,11 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
      * @param modelLayout This is the layout used to represent a single list item. You will be responsible for populating an
      *                    instance of the corresponding view with the data from an instance of modelClass.
      */
-    public FirebaseSearchAdapter(Activity activity, Class<T> modelClass, int modelLayout) {
+    public FirebaseSearchAdapter(Activity activity, Class<T> modelClass, int modelLayout, ProgressBar mLoadingIndicator) {
         mModelClass = modelClass;
         mLayout = modelLayout;
         mActivity = activity;
+        this.mLoadingIndicator = mLoadingIndicator;
         mRef = FirebaseDatabase.getInstance().getReference("users");
     }
 
@@ -120,18 +124,6 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
         return view;
     }
 
-    public void replaceQuery(Query newRef) {
-        if (mSnapshots != null)
-            mSnapshots.cleanup();
-        mSnapshots = new FirebaseArray(newRef);
-        mSnapshots.setOnChangedListener(new FirebaseArray.OnChangedListener() {
-            @Override
-            public void onChanged(FirebaseArray.OnChangedListener.EventType type, int index, int oldIndex) {
-                notifyDataSetChanged();
-            }
-        });
-    }
-
     /**
      * Each time the data at the given Firebase location changes, this method will be called for each item that needs
      * to be displayed. The first two arguments correspond to the mLayout and mModelClass given to the constructor of
@@ -150,10 +142,24 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
         return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                replaceQuery(mRef.orderByChild("name")
-                        .startAt((String) constraint)
-                        .endAt(constraint + "z")
-                        .limitToFirst(MAX_RESULTS));
+                if (mSnapshots != null)
+                    mSnapshots.cleanup();
+                mSnapshots = new FirebaseArray(
+                        mRef.orderByChild("email")
+                            .startAt((constraint+"").toLowerCase())
+                            .endAt((constraint + "z").toLowerCase())
+                            .limitToFirst(MAX_RESULTS),
+                        mRef.orderByChild("name_search")
+                            .startAt((constraint+"").toLowerCase())
+                            .endAt((constraint + "z").toLowerCase())
+                            .limitToFirst(MAX_RESULTS)
+                );
+                mSnapshots.setOnChangedListener(new FirebaseArray.OnChangedListener() {
+                    @Override
+                    public void onChanged(EventType type, int index, int oldIndex) {
+                        notifyDataSetChanged();
+                    }
+                });
                 return null;
             }
 

@@ -77,6 +77,7 @@ public class LoggedInActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            // Animate these
             case R.id.fab:
                 Log.d(TAG, "FAB pressed");
                 FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

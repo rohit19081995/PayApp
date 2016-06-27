@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this, LoginActivity.class));
             finish();
         } else {
+            // Animate this
             startActivity(new Intent(this, LoggedInActivity.class));
             finish();
         }

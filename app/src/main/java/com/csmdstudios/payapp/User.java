@@ -6,6 +6,7 @@ package com.csmdstudios.payapp;
 public class User {
 
     private String name;
+    private String name_search;
     private String email;
     private String pic_url;
 
@@ -14,6 +15,7 @@ public class User {
 
     public User(String name, String email, String pic_url) {
         this.name = name;
+        name_search = name.toLowerCase();
         this.email = email;
         this.pic_url = pic_url;
     }
@@ -21,7 +23,16 @@ public class User {
     public User(String name, String email) {
         this.email = email;
         this.name = name;
+        name_search = name.toLowerCase();
         pic_url = null;
+    }
+
+    public String getName_search() {
+        return name_search;
+    }
+
+    public void setName_search(String name_search) {
+        this.name_search = name_search;
     }
 
     public String getEmail() {

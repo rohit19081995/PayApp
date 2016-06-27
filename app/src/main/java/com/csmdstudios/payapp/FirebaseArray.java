@@ -14,6 +14,8 @@ package com.csmdstudios.payapp;
  * limitations under the License.
  */
 
+import android.util.Log;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,23 +27,27 @@ import java.util.ArrayList;
  * This class implements an array-like collection on top of a Firebase location.
  */
 class FirebaseArray implements ChildEventListener {
+
     public interface OnChangedListener {
         enum EventType { Added, Changed, Removed, Moved }
         void onChanged(EventType type, int index, int oldIndex);
     }
 
-    private Query mQuery;
+    private Query mEmailQuery, mNameQuery;
     private OnChangedListener mListener;
     private ArrayList<DataSnapshot> mSnapshots;
 
-    public FirebaseArray(Query ref) {
-        mQuery = ref;
+    public FirebaseArray(Query emailRef, Query nameRef) {
+        mEmailQuery = emailRef;
+        mNameQuery = nameRef;
         mSnapshots = new ArrayList<DataSnapshot>();
-        mQuery.addChildEventListener(this);
+        mEmailQuery.addChildEventListener(this);
+        mNameQuery.addChildEventListener(this);
     }
 
     public void cleanup() {
-        mQuery.removeEventListener(this);
+        mEmailQuery.removeEventListener(this);
+        mNameQuery.removeEventListener(this);
     }
 
     public int getCount() {
@@ -66,12 +72,17 @@ class FirebaseArray implements ChildEventListener {
 
     // Start of ChildEventListener methods
     public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-        int index = 0;
-        if (previousChildKey != null) {
-            index = getIndexForKey(previousChildKey) + 1;
+        // TODO:contains always returning false
+        if(!mSnapshots.contains(snapshot)) {
+            int index = 0;
+            if (previousChildKey != null) {
+                index = getIndexForKey(previousChildKey) + 1;
+            }
+
+            mSnapshots.add(index, snapshot);
+            Log.d("child", Boolean.toString(mSnapshots.contains(snapshot)));
+            notifyChangedListeners(OnChangedListener.EventType.Added, index);
         }
-        mSnapshots.add(index, snapshot);
-        notifyChangedListeners(OnChangedListener.EventType.Added, index);
     }
 
     public void onChildChanged(DataSnapshot snapshot, String previousChildKey) {
@@ -95,7 +106,7 @@ class FirebaseArray implements ChildEventListener {
     }
 
     public void onCancelled(DatabaseError firebaseError) {
-        // TODO: what do we do with this?
+        Log.d(this.getClass().toString(), firebaseError.getMessage());
     }
     // End of ChildEventListener methods
 
