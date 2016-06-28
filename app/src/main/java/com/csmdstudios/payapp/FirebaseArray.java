@@ -19,6 +19,7 @@ import android.util.Log;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
@@ -73,14 +74,15 @@ class FirebaseArray implements ChildEventListener {
     // Start of ChildEventListener methods
     public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
         // TODO:contains always returning false
-        if(!mSnapshots.contains(snapshot)) {
+        Log.d("child", "i go in child added");
+        if(!contains(mSnapshots, snapshot.getKey())) {
             int index = 0;
             if (previousChildKey != null) {
                 index = getIndexForKey(previousChildKey) + 1;
             }
 
             mSnapshots.add(index, snapshot);
-            Log.d("child", Boolean.toString(mSnapshots.contains(snapshot)));
+            Log.d("child", "i print");
             notifyChangedListeners(OnChangedListener.EventType.Added, index);
         }
     }
@@ -121,5 +123,12 @@ class FirebaseArray implements ChildEventListener {
         if (mListener != null) {
             mListener.onChanged(type, index, oldIndex);
         }
+    }
+
+    public static boolean contains(ArrayList<DataSnapshot> aList, String key) {
+        for (DataSnapshot dataSnapshot : aList) {
+            return dataSnapshot.getKey() == key;
+        }
+        return false;
     }
 }
