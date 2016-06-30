@@ -27,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.Locale;
@@ -50,6 +51,7 @@ public class AddTransactionFragment extends DialogFragment {
     private boolean itemClickedState;
 
     private FirebaseUser mUser;
+    private DatabaseReference mRef;
     private View fragmentLayout;
     private TextInputLayout inputLayout;
     private EditText amount;
@@ -129,17 +131,41 @@ public class AddTransactionFragment extends DialogFragment {
         }
 
         radioGroup.setVisibility(View.VISIBLE);
-        View amountLayout = fragmentLayout.findViewById(R.id.amount_layout);
+        final View amountLayout = fragmentLayout.findViewById(R.id.amount_layout);
         amountLayout.setVisibility(View.VISIBLE);
         amount.setVisibility(View.VISIBLE);
-        View descriptionLayout = fragmentLayout.findViewById(R.id.description_layout);
+        final TextInputLayout descriptionLayout = (TextInputLayout) fragmentLayout.findViewById(R.id.description_layout);
         descriptionLayout.setVisibility(View.VISIBLE);
         Button addButton = (Button) fragmentLayout.findViewById(R.id.add_button);
         addButton.setVisibility(View.VISIBLE);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Add transaction to database
+                double newAmount = Double.parseDouble(amount.getText().toString());
+                mRef = FirebaseDatabase.getInstance()
+                        .getReference(mUser.getUid() + "/transactions/" + user.getUID());
+                mRef = mRef.child(mRef.push().getKey());
+                DatabaseReference mRef2 = FirebaseDatabase.getInstance()
+                        .getReference(mUser.getUid() + "/transactors/" + user.getUID());
+                if (borrowButton.isChecked()) {
+                    //Do not validate
+                    mRef2.child("owed")
+                            .setValue(owed - newAmount);
+                } else {
+                    //validate
+                    mRef2.child("owed")
+                            .setValue(owed + newAmount);
+                    mRef2.child("unvalidated")
+                            .setValue(true);
 
+                    mRef.child("unvalidated").setValue(true);
+                }
+                mRef2.child("timestamp").setValue((ServerValue.TIMESTAMP));
+                mRef.child("description").setValue(descriptionLayout.getEditText().getText().toString());
+                mRef.child("owed").setValue(newAmount);
+                mRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
+                dismiss();
             }
         });
     }
@@ -180,7 +206,7 @@ public class AddTransactionFragment extends DialogFragment {
                             amount.setText(R.string.default_number);
                     }
                 });
-                DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors/" + user.getUID());
+                mRef = FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors/" + user.getUID());
                 mRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

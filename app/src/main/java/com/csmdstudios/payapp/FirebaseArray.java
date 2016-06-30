@@ -14,8 +14,12 @@ package com.csmdstudios.payapp;
  * limitations under the License.
  */
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,6 +41,7 @@ class FirebaseArray implements ChildEventListener {
     private Query mEmailQuery, mNameQuery;
     private OnChangedListener mListener;
     private ArrayList<DataSnapshot> mSnapshots;
+    private FirebaseUser mUser;
 
     public FirebaseArray(Query emailRef, Query nameRef) {
         mEmailQuery = emailRef;
@@ -44,6 +49,8 @@ class FirebaseArray implements ChildEventListener {
         mSnapshots = new ArrayList<DataSnapshot>();
         mEmailQuery.addChildEventListener(this);
         mNameQuery.addChildEventListener(this);
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
+
     }
 
     public void cleanup() {
@@ -75,7 +82,7 @@ class FirebaseArray implements ChildEventListener {
     public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
         // TODO:contains always returning false
         Log.d("child", "i go in child added");
-        if(!contains(mSnapshots, snapshot.getKey())) {
+        if(!contains(mSnapshots, snapshot.getKey()) && !mUser.getUid().equals(snapshot.getKey())) {
             int index = 0;
             if (previousChildKey != null) {
                 index = getIndexForKey(previousChildKey) + 1;

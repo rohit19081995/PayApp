@@ -90,14 +90,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="New RadioButton"
+                android:text="@string/borrow"
                 android:id="@+id/borrow" />
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="New RadioButton"
+                android:text="@string/lend"
                 android:id="@+id/lend" />
     </RadioGroup>
 

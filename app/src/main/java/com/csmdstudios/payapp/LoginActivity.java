@@ -193,9 +193,7 @@ public class LoginActivity extends AppCompatActivity implements
                 googleSignIn();
                 break;
             case R.id.login_button:
-                //emailSignIn();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                new AddTransactionFragment().show(fragmentTransaction, TAG);
+                emailSignIn();
                 break;
             case R.id.sign_up:
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
