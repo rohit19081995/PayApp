@@ -10,7 +10,25 @@ public class User {
     private String email;
     private String pic_url;
 
+    public String getUID() {
+        return UID;
+    }
+
+    public void setUID(String UID) {
+        this.UID = UID;
+    }
+
+    private String UID;
+
     public User() {
+    }
+
+    public User(String[] userString) {
+        UID = userString[0];
+        name = userString[1];
+        name_search = name.toLowerCase();
+        email = userString[2];
+        pic_url = userString[3];
     }
 
     public User(String name, String email, String pic_url) {

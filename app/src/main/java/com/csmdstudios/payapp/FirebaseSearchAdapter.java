@@ -111,6 +111,10 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
         return mSnapshots.getItem(i).getKey().hashCode();
     }
 
+    public String getUID(int position) {
+        return mSnapshots.getItem(position).getKey();
+    }
+
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         if (view == null) {
