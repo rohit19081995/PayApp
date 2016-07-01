@@ -106,7 +106,7 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true"
         android:visibility="gone"
-        android:id="@+id/amount_layout"
+        android:id="@+id/description_layout"
         android:layout_below="@+id/radio_group"
         android:layout_centerHorizontal="true">
 
@@ -122,8 +122,8 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true"
         android:visibility="gone"
-        android:id="@+id/description_layout"
-        android:layout_below="@+id/amount_layout"
+        android:id="@+id/amount_layout"
+        android:layout_below="@+id/description_layout"
         android:layout_centerHorizontal="true">
 
         <EditText
