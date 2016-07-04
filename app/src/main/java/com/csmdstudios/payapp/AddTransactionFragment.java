@@ -116,7 +116,6 @@ public class AddTransactionFragment extends DialogFragment {
         if (user.getPic_url() != null) {
             Glide.with(getActivity()).load(user.getPic_url()).into(image);
         }
-        image.setImageAlpha(255);
 
         if (owed > 0) {
             borrowButton.setText(R.string.paid_me_back);
@@ -154,6 +153,11 @@ public class AddTransactionFragment extends DialogFragment {
                             .getReference(mUser.getUid() + "/transactors/" + user.getUID());
                     DatabaseReference nRef2 = FirebaseDatabase.getInstance()
                             .getReference(user.getUID() + "/transactors/" + mUser.getUid());
+                    mRef2.child("name").setValue(user.getName());
+                    nRef2.child("name").setValue(mUser.getDisplayName());
+                    mRef2.child("pic_url").setValue(user.getPic_url());
+                    if (mUser.getPhotoUrl() != null)
+                        nRef2.child("pic_url").setValue(mUser.getPhotoUrl().toString());
                     double newOwed;
                     if (borrowButton.isChecked()) {
                         //Do not validate
@@ -239,7 +243,7 @@ public class AddTransactionFragment extends DialogFragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.d(TAG, dataSnapshot.toString());
-                        if (dataSnapshot.getValue() != null)
+                        if (dataSnapshot.exists())
                             owed = dataSnapshot.getValue(Double.class);
                         if ((borrowButton.isChecked() && owed > 0) || (!borrowButton.isChecked() && owed < 0))
                             amount.setText(String.format(Locale.getDefault(),"%,.2f", Math.abs(owed)));

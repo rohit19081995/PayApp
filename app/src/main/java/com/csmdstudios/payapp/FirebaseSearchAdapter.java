@@ -15,7 +15,6 @@
 package com.csmdstudios.payapp;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -59,7 +58,7 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
     protected int mLayout;
     protected Activity mActivity;
     Query mRef;
-    FirebaseArray mSnapshots;
+    FirebaseSearchArray mSnapshots;
     private ProgressBar mLoadingIndicator;
 
 
@@ -68,6 +67,7 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
      * @param modelClass  Firebase will marshall the data at a location into an instance of a class that you provide
      * @param modelLayout This is the layout used to represent a single list item. You will be responsible for populating an
      *                    instance of the corresponding view with the data from an instance of modelClass.
+     * @param modelLayout The progress bar that stops Loading when something or nothing is found
      */
     public FirebaseSearchAdapter(Activity activity, Class<T> modelClass, int modelLayout, ProgressBar mLoadingIndicator) {
         mModelClass = modelClass;
@@ -148,7 +148,7 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
             protected FilterResults performFiltering(CharSequence constraint) {
                 if (mSnapshots != null)
                     mSnapshots.cleanup();
-                mSnapshots = new FirebaseArray(
+                mSnapshots = new FirebaseSearchArray(mActivity,
                         mRef.orderByChild("email")
                             .startAt((constraint+"").toLowerCase())
                             .endAt((constraint + "z").toLowerCase())
@@ -158,7 +158,7 @@ public abstract class FirebaseSearchAdapter<T> extends BaseAdapter implements Fi
                             .endAt((constraint + "z").toLowerCase())
                             .limitToFirst(MAX_RESULTS)
                 );
-                mSnapshots.setOnChangedListener(new FirebaseArray.OnChangedListener() {
+                mSnapshots.setOnChangedListener(new FirebaseSearchArray.OnChangedListener() {
                     @Override
                     public void onChanged(EventType type, int index, int oldIndex) {
                         notifyDataSetChanged();
