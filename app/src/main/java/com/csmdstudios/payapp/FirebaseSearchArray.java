@@ -47,8 +47,11 @@ class FirebaseSearchArray implements ChildEventListener {
     private ArrayList<DataSnapshot> mSnapshots;
     private FirebaseUser mUser;
     private ProgressBar mLoadingIndicator;
+    private int index;
+
 
     public FirebaseSearchArray(Activity activity, Query emailRef, Query nameRef) {
+        index = 0;
         mEmailQuery = emailRef;
         mNameQuery = nameRef;
         mSnapshots = new ArrayList<DataSnapshot>();
@@ -102,17 +105,12 @@ class FirebaseSearchArray implements ChildEventListener {
 
     // Start of ChildEventListener methods
     public void onChildAdded(DataSnapshot snapshot, String previousChildKey) {
-        Log.d("child", "i go in child added");
         if(!contains(mSnapshots, snapshot.getKey()) && !mUser.getUid().equals(snapshot.getKey())) {
-            int index = 0;
-            if (previousChildKey != null) {
-                index = getIndexForKey(previousChildKey) + 1;
-            }
             if (mLoadingIndicator != null) {
                 mLoadingIndicator.setVisibility(View.GONE);
             }
             mSnapshots.add(index, snapshot);
-            Log.d("child", "i print");
+            index++;
             notifyChangedListeners(OnChangedListener.EventType.Added, index);
         }
     }
@@ -156,7 +154,9 @@ class FirebaseSearchArray implements ChildEventListener {
     }
 
     public static boolean contains(ArrayList<DataSnapshot> aList, String key) {
-        for (DataSnapshot dataSnapshot : aList) return dataSnapshot.getKey().equals(key);
+        for (DataSnapshot dataSnapshot : aList) {
+            if (dataSnapshot.getKey().equals(key)) return true;
+        }
         return false;
     }
 }
