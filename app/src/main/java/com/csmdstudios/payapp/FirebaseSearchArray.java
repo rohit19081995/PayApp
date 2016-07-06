@@ -56,13 +56,12 @@ class FirebaseSearchArray implements ChildEventListener {
         mNameQuery = nameRef;
         mSnapshots = new ArrayList<DataSnapshot>();
         mLoadingIndicator = (ProgressBar) activity.findViewById(R.id.pb_loading_indicator);
+        mEmailQuery.addChildEventListener(this);
+        mNameQuery.addChildEventListener(this);
         mEmailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    mEmailQuery.addChildEventListener(FirebaseSearchArray.this);
-                    mNameQuery.addChildEventListener(FirebaseSearchArray.this);
-                } else {
+                if (!dataSnapshot.exists()) {
                     cleanup();
                     if (mLoadingIndicator != null)
                         mLoadingIndicator.setVisibility(View.GONE);
@@ -110,8 +109,8 @@ class FirebaseSearchArray implements ChildEventListener {
                 mLoadingIndicator.setVisibility(View.GONE);
             }
             mSnapshots.add(index, snapshot);
-            index++;
             notifyChangedListeners(OnChangedListener.EventType.Added, index);
+            index++;
         }
     }
 

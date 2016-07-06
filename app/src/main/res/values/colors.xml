@@ -3,6 +3,7 @@
     <color name="colorPrimary">#4caf50</color>
     <color name="colorPrimaryDark">#388e3c</color>
     <color name="colorAccent">#ff5722</color>
-    <color name="colorOwed">#00c853</color>
-    <color name="colorOwes">#d50000</color>
+    <color name="colorOwed">#2e7d32</color>
+    <color name="colorOwes">#b71c1c</color>
+    <color name="colorBackground">#bdbdbd</color>
 </resources>
