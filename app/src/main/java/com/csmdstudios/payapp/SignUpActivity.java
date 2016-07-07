@@ -1,5 +1,6 @@
 package com.csmdstudios.payapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
@@ -36,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
     private TextInputLayout confirmPassword;
     private TextInputLayout name;
     private TextInputLayout email;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         addNewUser(user);
                                         Log.d(TAG, "User profile updated.");
+                                        progressDialog.dismiss();
                                         startActivity(new Intent(SignUpActivity.this, LoggedInActivity.class));
                                         finish();
                                     }
@@ -153,6 +156,8 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (formValidate()) {
                     // Create the user
+                    ProgressDialog progressDialog = new ProgressDialog(SignUpActivity.this);
+                    progressDialog.show();
                     mAuth.createUserWithEmailAndPassword(((EditText) findViewById(R.id.email_signup)).getText().toString(),
                             password.getEditText().getText().toString())
                             .addOnCompleteListener(SignUpActivity.this, signUpComplete);

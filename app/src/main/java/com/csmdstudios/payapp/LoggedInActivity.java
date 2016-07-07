@@ -11,24 +11,17 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ServerValue;
 
 import java.util.Locale;
 
@@ -41,7 +34,6 @@ public class LoggedInActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseUser mUser;
-    private FirebaseAuth.AuthStateListener mAuthListener;
     public String currency;
 
 
@@ -62,7 +54,7 @@ public class LoggedInActivity extends AppCompatActivity {
         currency = "\u20B9";
 
         // Firebase auth listener
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
                 mUser = firebaseAuth.getCurrentUser();
@@ -121,7 +113,7 @@ public class LoggedInActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
     }
 
-    private static class TransactorViewHolder extends RecyclerView.ViewHolder {
+    private static class TransactorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView nameView;
         private TextView owedView;
@@ -134,6 +126,37 @@ public class LoggedInActivity extends AppCompatActivity {
             owedInfo = (TextView) itemView.findViewById(R.id.owe_info);
             owedView = (TextView) itemView.findViewById(R.id.owed);
             imageView = (CircleImageView) itemView.findViewById(R.id.imageView);
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.logout:
+                logout();
+                return true;
+            case R.id.settings:
+                showSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showSettings() {
     }
 }

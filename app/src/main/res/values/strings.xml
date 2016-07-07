@@ -40,5 +40,6 @@
     <string name="description">Description (optional)</string>
     <string name="you_owe">you owe</string>
     <string name="owes_you">owes you</string>
+    <string name="settings">Settings</string>
 
 </resources>

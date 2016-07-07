@@ -5,5 +5,6 @@
     <color name="colorAccent">#ff5722</color>
     <color name="colorOwed">#2e7d32</color>
     <color name="colorOwes">#b71c1c</color>
-    <color name="colorBackground">#bdbdbd</color>
+    <color name="colorBackground">#f2f5f6</color>
+    <color name="lt_gray">#bdbdbd</color>
 </resources>
