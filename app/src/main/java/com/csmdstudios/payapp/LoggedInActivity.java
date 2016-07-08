@@ -1,6 +1,7 @@
 package com.csmdstudios.payapp;
 
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -34,7 +36,10 @@ public class LoggedInActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private FirebaseUser mUser;
-    public String currency;
+    public static String currency;
+
+    public static final String TRANSACTOR_EXTRA = "Transactor details";
+    public static final String OWED_EXTRA = "Transactor owed double";
 
 
     @Override
@@ -44,7 +49,7 @@ public class LoggedInActivity extends AppCompatActivity {
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
         ActionBar ab = getSupportActionBar();
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView = (RecyclerView) findViewById(R.id.transactor_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -65,8 +70,6 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         };
 
-        Log.d(TAG, mUser.getUid());
-
         FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transactor, TransactorViewHolder>(
                 Transactor.class,
                 R.layout.transactor_layout,
@@ -75,11 +78,14 @@ public class LoggedInActivity extends AppCompatActivity {
 
             @Override
             protected void populateViewHolder(TransactorViewHolder viewHolder, Transactor model, int position) {
-                if (model.getPic_url() != null)
+                if (model.getPic_url() != null) {
                     Glide.with(LoggedInActivity.this).load(model.getPic_url()).into(viewHolder.imageView);
+                    viewHolder.picUrl = model.getPic_url();
+                }
                 viewHolder.nameView.setText(model.getName());
 
                 double owed = model.getOwed();
+                viewHolder.owed = owed;
                 if (owed > 0) {
                     viewHolder.owedInfo.setTextColor(ContextCompat.getColor(LoggedInActivity.this, R.color.colorOwed));
                     viewHolder.owedInfo.setText(R.string.owes_you);
@@ -119,6 +125,9 @@ public class LoggedInActivity extends AppCompatActivity {
         private TextView owedView;
         private TextView owedInfo;
         private CircleImageView imageView;
+        private String picUrl;
+        private Context context;
+        private double owed;
 
         public TransactorViewHolder(View itemView) {
             super(itemView);
@@ -127,12 +136,22 @@ public class LoggedInActivity extends AppCompatActivity {
             owedView = (TextView) itemView.findViewById(R.id.owed);
             imageView = (CircleImageView) itemView.findViewById(R.id.imageView);
             itemView.setOnClickListener(this);
+            context = itemView.getContext();
+            picUrl = null;
         }
 
         @Override
         public void onClick(View v) {
-
+            Intent intent = new Intent(context, TransactorActivity.class);
+            ArrayList<String> transactorStrings = new ArrayList<>();
+            transactorStrings.add(nameView.getText().toString());
+            transactorStrings.add(owedInfo.getText().toString());
+            transactorStrings.add(picUrl);
+            intent.putStringArrayListExtra(TRANSACTOR_EXTRA, transactorStrings);
+            intent.putExtra(OWED_EXTRA, owed);
+            context.startActivity(intent);
         }
+
     }
 
     @Override

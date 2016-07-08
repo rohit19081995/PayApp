@@ -39,7 +39,10 @@
             android:label="@string/forgot_password"
             android:parentActivityName=".LoginActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".TransactorActivity"></activity>
+        <activity
+            android:name=".TransactorActivity"
+            android:parentActivityName=".LoggedInActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
