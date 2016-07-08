@@ -154,6 +154,9 @@ public abstract class FirebaseRecyclerAdapter<T, VH extends RecyclerView.ViewHol
         // http://stackoverflow.com/questions/5100071/whats-the-purpose-of-item-ids-in-android-listview-adapter
         return mSnapshots.getItem(position).getKey().hashCode();
     }
+    public String getItemKey(int position) {
+        return mSnapshots.getItem(position).getKey();
+    }
 
     @Override
     public VH onCreateViewHolder(ViewGroup parent, int viewType) {

@@ -83,6 +83,7 @@ public class LoggedInActivity extends AppCompatActivity {
                     viewHolder.picUrl = model.getPic_url();
                 }
                 viewHolder.nameView.setText(model.getName());
+                viewHolder.UID = getItemKey(position);
 
                 double owed = model.getOwed();
                 viewHolder.owed = owed;
@@ -117,6 +118,9 @@ public class LoggedInActivity extends AppCompatActivity {
     public void logout() {
         LoginManager.getInstance().logOut();
         FirebaseAuth.getInstance().signOut();
+
+        startActivity(new Intent(LoggedInActivity.this, LoginActivity.class));
+        finish();
     }
 
     private static class TransactorViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -128,6 +132,7 @@ public class LoggedInActivity extends AppCompatActivity {
         private String picUrl;
         private Context context;
         private double owed;
+        public String UID;
 
         public TransactorViewHolder(View itemView) {
             super(itemView);
@@ -147,6 +152,7 @@ public class LoggedInActivity extends AppCompatActivity {
             transactorStrings.add(nameView.getText().toString());
             transactorStrings.add(owedInfo.getText().toString());
             transactorStrings.add(picUrl);
+            transactorStrings.add(UID);
             intent.putStringArrayListExtra(TRANSACTOR_EXTRA, transactorStrings);
             intent.putExtra(OWED_EXTRA, owed);
             context.startActivity(intent);

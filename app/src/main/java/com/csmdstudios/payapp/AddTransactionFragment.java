@@ -43,11 +43,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class AddTransactionFragment extends DialogFragment {
 
 
-    private static final int THRESHOLD = 3;
-    private static final String TAG = "AddTransactionFragment";
-    private static final String USER_SELECTED_STATE = "User Selected";
-    private static final String USER_SELECTED = "User Selected Array";
-    private static final String USER_OWED = "User Selected Owed";
+    public static final int THRESHOLD = 3;
+    public static final String TAG = "AddTransactionFragment";
+    public static final String USER_SELECTED_STATE = "User Selected";
+    public static final String USER_SELECTED = "User Selected Array";
+    public static final String USER_OWED = "User Selected Owed";
     private User user;
     private double owed = 0;
     private boolean itemClickedState;
@@ -65,6 +65,20 @@ public class AddTransactionFragment extends DialogFragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            itemClickedState = bundle.getBoolean(USER_SELECTED_STATE, false);
+            owed = bundle.getDouble(USER_OWED);
+            if (itemClickedState) {
+                String[] userString = bundle.getStringArray(USER_SELECTED);
+                user = new User(userString);
+            }
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -77,6 +91,7 @@ public class AddTransactionFragment extends DialogFragment {
             }
         }
 
+        Log.d(TAG, Boolean.toString(savedInstanceState != null));
         // Inflate the layout for this fragment
         mUser = FirebaseAuth.getInstance().getCurrentUser();
         fragmentLayout = inflater.inflate(R.layout.fragment_add_transaction, container, false);
@@ -102,7 +117,7 @@ public class AddTransactionFragment extends DialogFragment {
         savedInstanceState.putBoolean(USER_SELECTED_STATE, itemClickedState);
         savedInstanceState.putDouble(USER_OWED, owed);
         if (itemClickedState) {
-            String[] userString = {user.getUID(), user.getName(), user.getEmail(), user.getPic_url()};
+            String[] userString = {user.getUID(), user.getName(),  user.getPic_url()};
             savedInstanceState.putStringArray(USER_SELECTED, userString);
         }
     }
@@ -277,5 +292,12 @@ public class AddTransactionFragment extends DialogFragment {
                 loadItemClickedState();
             }
         });
+    }
+
+    public static AddTransactionFragment newInstance(Bundle args) {
+        AddTransactionFragment myFragment = new AddTransactionFragment();
+        myFragment.setArguments(args);
+
+        return myFragment;
     }
 }

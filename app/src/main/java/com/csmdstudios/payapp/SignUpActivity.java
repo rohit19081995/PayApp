@@ -74,7 +74,6 @@ public class SignUpActivity extends AppCompatActivity {
                                     if (task.isSuccessful()) {
                                         addNewUser(user);
                                         Log.d(TAG, "User profile updated.");
-                                        progressDialog.dismiss();
                                         startActivity(new Intent(SignUpActivity.this, LoggedInActivity.class));
                                         finish();
                                     }

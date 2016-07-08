@@ -27,8 +27,9 @@ public class User {
         UID = userString[0];
         name = userString[1];
         name_search = name.toLowerCase();
-        email = userString[2];
-        pic_url = userString[3];
+        pic_url = userString[2];
+        email = null;
+
     }
 
     public User(String name, String email, String pic_url) {
