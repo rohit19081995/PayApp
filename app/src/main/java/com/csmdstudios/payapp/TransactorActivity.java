@@ -54,7 +54,7 @@ public class TransactorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ArrayList<String> transactor = intent.getStringArrayListExtra(LoggedInActivity.TRANSACTOR_EXTRA);
         name = transactor.get(0);
-        firstName = name.split(" ")[0];
+        firstName = name.trim().split(" ")[0];
         owedInfo = transactor.get(1);
         owed = intent.getDoubleExtra(LoggedInActivity.OWED_EXTRA, 0);
         Log.d("OWED", Double.toString(owed));
