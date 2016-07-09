@@ -215,9 +215,12 @@ public class AddTransactionFragment extends DialogFragment {
                         mRef2.child("timestamp").setValue((ServerValue.TIMESTAMP));
                         nRef2.child("timestamp").setValue((ServerValue.TIMESTAMP));
                     }
-                    mRef.child("description").setValue(descriptionLayout.getEditText().getText().toString());
+                    String description = descriptionLayout.getEditText().getText().toString();
+                    if ( description.length() > 0) {
+                        mRef.child("description").setValue(description);
+                        nRef.child("description").setValue(description);
+                    }
                     mRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
-                    nRef.child("description").setValue(descriptionLayout.getEditText().getText().toString());
                     nRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
                 }
                 dismiss();
@@ -229,7 +232,7 @@ public class AddTransactionFragment extends DialogFragment {
         final DelayAutoCompleteTextView textView = (DelayAutoCompleteTextView) fragmentLayout.findViewById(R.id.name_search);
         textView.setThreshold(THRESHOLD);
         ProgressBar mLoadingIndicator = ((ProgressBar) fragmentLayout.findViewById(R.id.pb_loading_indicator));
-        final FirebaseSearchAdapter<User> searchAdapter = new FirebaseSearchAdapter<User>(getActivity(), User.class, R.layout.image_dropdown, mLoadingIndicator) {
+        final FirebaseSearchAdapter<User> searchAdapter = new FirebaseSearchAdapter<User>(getActivity(), User.class, R.layout.image_dropdown) {
             @Override
             protected void populateView(View v, User model, int position) {
                 Log.d(TAG, "child for filter");

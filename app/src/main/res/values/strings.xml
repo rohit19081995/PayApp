@@ -41,5 +41,7 @@
     <string name="you_owe">you owe</string>
     <string name="owes_you">owes you</string>
     <string name="settings">Settings</string>
+    <string name="you_paid">You paid</string>
+    <string name="paid_you">paid you</string>
 
 </resources>

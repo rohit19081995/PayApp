@@ -3,6 +3,7 @@ package com.csmdstudios.payapp;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -85,13 +88,36 @@ public class TransactorActivity extends AppCompatActivity {
             }
         };
 
-//        FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
-//                Transaction.class,
-//                R.layout.transaction_layout,
-//                TransactionViewHolder.class,
-//                FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors")) {
-//        };
-//        mRecyclerView.setAdapter(mAdapter);
+        FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
+                Transaction.class,
+                R.layout.transaction_layout,
+                TransactionViewHolder.class,
+                FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactions/" + UID)) {
+            @Override
+            protected void populateViewHolder(TransactionViewHolder viewHolder, Transaction model, int position) {
+                double owed = model.getOwed();
+                if (owed > 0) {
+                    // You paid
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) viewHolder.transactionView.getLayoutParams();
+                    params.addRule(RelativeLayout.ALIGN_PARENT_END);
+                    viewHolder.transactionView.setLayoutParams(params);
+                    viewHolder.transactionView.setBackgroundResource(R.drawable.green);
+                    viewHolder.transactorView.setText(String.format("%s %s", R.string.you_paid, name));
+                } else {
+                    // They paid
+                    viewHolder.transactorView.setText(String.format("%s %s", R.string.paid_you, name));
+                }
+                viewHolder.amountView.setText(String.format(Locale.getDefault(), "%s %,.2f", LoggedInActivity.currency, Math.abs(owed)));
+
+                String description = model.getDescription();
+                if (description != null) {
+                    viewHolder.descriptionView.setText(description);
+                    viewHolder.descriptionView.setVisibility(View.VISIBLE);
+                    viewHolder.dividerView.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+        mRecyclerView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
@@ -109,6 +135,26 @@ public class TransactorActivity extends AppCompatActivity {
                     fragment.show(fragmentTransaction, TAG);
                 }
             });
+        }
+    }
+
+    private static class TransactionViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView descriptionView;
+        private View dividerView;
+        private TextView transactorView;
+        private TextView amountView;
+        private TextView timeView;
+        private LinearLayout transactionView;
+
+        public TransactionViewHolder(View itemView) {
+            super(itemView);
+            transactionView = (LinearLayout) itemView.findViewById(R.id.transaction_view);
+            descriptionView = (TextView) transactionView.findViewById(R.id.description_view);
+            dividerView = transactionView.findViewById(R.id.divider_view);
+            transactorView = (TextView) transactionView.findViewById(R.id.transactor_view);
+            amountView = (TextView) transactionView.findViewById(R.id.amount_view);
+            timeView = (TextView) transactionView.findViewById(R.id.time_view);
         }
     }
 
