@@ -19,6 +19,7 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:id="@+id/transactor_image"
+            android:foregroundGravity="left"
             android:src="@drawable/ic_person_white_24px"
             app:civ_border_color="#ffffff"
             app:civ_border_width="1dp" />
@@ -27,16 +28,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/transactor_textview"
-            android:layout_marginStart="@dimen/activity_horizontal_margin"
+            android:layout_marginStart="30dp"
             android:singleLine="true"
             style="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
-            android:gravity="center_horizontal"/>
+            android:gravity="center_vertical"/>
     </android.support.v7.widget.Toolbar>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/my_toolbar"
+        app:stackFromEnd="true"
         android:id="@+id/transaction_recycler_view"/>
 
     <android.support.design.widget.FloatingActionButton

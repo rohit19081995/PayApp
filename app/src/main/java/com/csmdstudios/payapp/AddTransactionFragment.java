@@ -102,6 +102,17 @@ public class AddTransactionFragment extends DialogFragment {
         borrowButton = (RadioButton) radioGroup.findViewById(R.id.borrow);
         lendButton = (RadioButton) radioGroup.findViewById(R.id.lend);
 
+        borrowButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if ((isChecked && owed > 0) || (!isChecked && owed < 0))
+                    amount.setText(String.format(Locale.getDefault(),"%,.2f", Math.abs(owed)));
+                else
+                    amount.setText(R.string.default_number);
+            }
+        });
+
         if (itemClickedState) {
             loadItemClickedState();
         } else {
@@ -254,16 +265,6 @@ public class AddTransactionFragment extends DialogFragment {
                 itemClickedState = true;
                 user = searchAdapter.getItem(position);
                 user.setUID(searchAdapter.getUID(position));
-                borrowButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        if ((isChecked && owed > 0) || (!isChecked && owed < 0))
-                            amount.setText(String.format(Locale.getDefault(),"%,.2f", Math.abs(owed)));
-                        else
-                            amount.setText(R.string.default_number);
-                    }
-                });
                 DatabaseReference mRef = FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors/" + user.getUID() + "/owed");
                 mRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

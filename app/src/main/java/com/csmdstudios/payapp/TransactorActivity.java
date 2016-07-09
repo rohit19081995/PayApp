@@ -40,6 +40,7 @@ public class TransactorActivity extends AppCompatActivity {
     private FirebaseUser mUser;
     public String currency;
     private String name;
+    private String firstName;
     private String owedInfo;
     private String picURL;
     private double owed;
@@ -53,6 +54,7 @@ public class TransactorActivity extends AppCompatActivity {
         Intent intent = getIntent();
         ArrayList<String> transactor = intent.getStringArrayListExtra(LoggedInActivity.TRANSACTOR_EXTRA);
         name = transactor.get(0);
+        firstName = name.split(" ")[0];
         owedInfo = transactor.get(1);
         owed = intent.getDoubleExtra(LoggedInActivity.OWED_EXTRA, 0);
         Log.d("OWED", Double.toString(owed));
@@ -71,7 +73,6 @@ public class TransactorActivity extends AppCompatActivity {
         mRecyclerView = (RecyclerView) findViewById(R.id.transaction_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
 
         // TODO: change currency in preferences
@@ -88,7 +89,7 @@ public class TransactorActivity extends AppCompatActivity {
             }
         };
 
-        FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
+        final FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
                 Transaction.class,
                 R.layout.transaction_layout,
                 TransactionViewHolder.class,
@@ -102,10 +103,10 @@ public class TransactorActivity extends AppCompatActivity {
                     params.addRule(RelativeLayout.ALIGN_PARENT_END);
                     viewHolder.transactionView.setLayoutParams(params);
                     viewHolder.transactionView.setBackgroundResource(R.drawable.green);
-                    viewHolder.transactorView.setText(String.format("%s %s", R.string.you_paid, name));
+                    viewHolder.transactorView.setText(String.format("%s %s", getString(R.string.you_paid), firstName));
                 } else {
                     // They paid
-                    viewHolder.transactorView.setText(String.format("%s %s", R.string.paid_you, name));
+                    viewHolder.transactorView.setText(String.format("%s %s", firstName, getString(R.string.paid_you)));
                 }
                 viewHolder.amountView.setText(String.format(Locale.getDefault(), "%s %,.2f", LoggedInActivity.currency, Math.abs(owed)));
 
@@ -117,6 +118,15 @@ public class TransactorActivity extends AppCompatActivity {
                 }
             }
         };
+
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                mLayoutManager.smoothScrollToPosition(mRecyclerView, null, positionStart);
+            }
+        });
+        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
