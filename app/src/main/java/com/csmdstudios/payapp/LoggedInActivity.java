@@ -100,6 +100,7 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         };
 
+
         mRecyclerView.setAdapter(mAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -129,6 +130,7 @@ public class LoggedInActivity extends AppCompatActivity {
         private TextView owedView;
         private TextView owedInfo;
         private CircleImageView imageView;
+        private View dividerView;
         private String picUrl;
         private Context context;
         private double owed;
@@ -140,6 +142,7 @@ public class LoggedInActivity extends AppCompatActivity {
             owedInfo = (TextView) itemView.findViewById(R.id.owe_info);
             owedView = (TextView) itemView.findViewById(R.id.owed);
             imageView = (CircleImageView) itemView.findViewById(R.id.imageView);
+            dividerView = itemView.findViewById(R.id.divider_view);
             itemView.setOnClickListener(this);
             context = itemView.getContext();
             picUrl = null;

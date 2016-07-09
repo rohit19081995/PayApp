@@ -53,6 +53,7 @@
         android:textSize="30sp" />
 
     <View
+        android:id="@+id/divider_view"
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/lt_gray"

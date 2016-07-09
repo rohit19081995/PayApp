@@ -246,12 +246,12 @@ public class AddTransactionFragment extends DialogFragment {
         final FirebaseSearchAdapter<User> searchAdapter = new FirebaseSearchAdapter<User>(getActivity(), User.class, R.layout.image_dropdown) {
             @Override
             protected void populateView(View v, User model, int position) {
-                Log.d(TAG, "child for filter");
-                User user = (User) getItem(position);
-                ((TextView) v.findViewById(R.id.text1)).setText(user.getName());
-                if (user.getPic_url() != null) {
+                ((TextView) v.findViewById(R.id.text1)).setText(model.getName());
+                if (model.getPic_url() != null) {
                     ImageView imageView = (ImageView) v.findViewById(R.id.imageView);
-                    Glide.with(getActivity()).load(user.getPic_url()).into(imageView);
+                    Glide.with(getActivity()).load(model.getPic_url()).into(imageView);
+
+
                 }
             }
         };
