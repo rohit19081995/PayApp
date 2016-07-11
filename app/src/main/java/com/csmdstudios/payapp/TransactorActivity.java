@@ -4,11 +4,13 @@ import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -25,9 +27,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.api.model.StringList;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -109,6 +116,10 @@ public class TransactorActivity extends AppCompatActivity {
                     viewHolder.transactorView.setText(String.format("%s %s", firstName, getString(R.string.paid_you)));
                 }
                 viewHolder.amountView.setText(String.format(Locale.getDefault(), "%s %,.2f", LoggedInActivity.currency, Math.abs(owed)));
+                DateTime dateTime = new DateTime(model.getTimestamp());
+                viewHolder.timestamp = dateTime;
+                viewHolder.timeView.setText(String.format("%s %s", dateTime.monthOfYear().getAsShortText(Locale.getDefault()),
+                        dateTime.dayOfMonth().getAsShortText(Locale.getDefault())));
 
                 String description = model.getDescription();
                 if (description != null) {
@@ -148,13 +159,14 @@ public class TransactorActivity extends AppCompatActivity {
         }
     }
 
-    private static class TransactionViewHolder extends RecyclerView.ViewHolder {
+    private static class TransactionViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
 
         private TextView descriptionView;
         private View dividerView;
         private TextView transactorView;
         private TextView amountView;
         private TextView timeView;
+        private DateTime timestamp;
         private LinearLayout transactionView;
 
         public TransactionViewHolder(View itemView) {
@@ -165,6 +177,14 @@ public class TransactorActivity extends AppCompatActivity {
             transactorView = (TextView) transactionView.findViewById(R.id.transactor_view);
             amountView = (TextView) transactionView.findViewById(R.id.amount_view);
             timeView = (TextView) transactionView.findViewById(R.id.time_view);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setMessage(String.format("Date: %s\nTime: %s", timestamp.toString("dd/MMM/YYYY"), timestamp.toString("hh:mm:ss a"))).show();
+            return false;
         }
     }
 

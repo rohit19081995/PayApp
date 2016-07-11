@@ -43,5 +43,6 @@
     <string name="settings">Settings</string>
     <string name="you_paid">You paid</string>
     <string name="paid_you">paid you</string>
+    <string name="OK">OK</string>
 
 </resources>
