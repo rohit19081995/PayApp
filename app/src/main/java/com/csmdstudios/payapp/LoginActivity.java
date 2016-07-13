@@ -17,6 +17,7 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -297,6 +298,7 @@ public class LoginActivity extends AppCompatActivity implements
                                 Toast.makeText(LoginActivity.this, task.getException().toString().split(":",2)[1],
                                         Toast.LENGTH_SHORT).show();
                             }
+                            LoginManager.getInstance().logOut();
                             Log.w(TAG, "signInWithCredential", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }

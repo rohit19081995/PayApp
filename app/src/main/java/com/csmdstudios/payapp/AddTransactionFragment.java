@@ -91,6 +91,7 @@ public class AddTransactionFragment extends DialogFragment {
             }
         }
 
+
         Log.d(TAG, Boolean.toString(savedInstanceState != null));
         // Inflate the layout for this fragment
         mUser = FirebaseAuth.getInstance().getCurrentUser();

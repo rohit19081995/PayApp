@@ -44,5 +44,6 @@
     <string name="you_paid">You paid</string>
     <string name="paid_you">paid you</string>
     <string name="OK">OK</string>
+    <string name="no_debts">Looks like you don\'t have any debts.\nAdd a transaction using the + button</string>
 
 </resources>

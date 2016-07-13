@@ -70,7 +70,7 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         };
 
-        FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transactor, TransactorViewHolder>(
+        final FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transactor, TransactorViewHolder>(
                 Transactor.class,
                 R.layout.transactor_layout,
                 TransactorViewHolder.class,
@@ -97,11 +97,26 @@ public class LoggedInActivity extends AppCompatActivity {
                     viewHolder.owedView.setTextColor(ContextCompat.getColor(LoggedInActivity.this, R.color.colorOwes));
                 }
                 viewHolder.owedView.setText(String.format(Locale.getDefault(),"%s %,.2f", currency, Math.abs(owed)));
+                if (position == getItemCount()-1) viewHolder.dividerView.setVisibility(View.GONE);
             }
         };
 
 
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+                findViewById(R.id.no_debts).setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onItemRangeRemoved(int positionStart, int itemCount) {
+                super.onItemRangeRemoved(positionStart, itemCount);
+                if (itemCount == 0)
+                    findViewById(R.id.no_debts).setVisibility(View.VISIBLE);
+            }
+        });
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
