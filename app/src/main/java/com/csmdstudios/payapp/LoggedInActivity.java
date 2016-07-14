@@ -74,7 +74,7 @@ public class LoggedInActivity extends AppCompatActivity {
                 Transactor.class,
                 R.layout.transactor_layout,
                 TransactorViewHolder.class,
-                FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors")) {
+                FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactors").orderByChild("timestamp")) {
 
             @Override
             protected void populateViewHolder(TransactorViewHolder viewHolder, Transactor model, int position) {
@@ -101,7 +101,7 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         };
 
-
+        ((LinearLayoutManager) mLayoutManager).setReverseLayout(true);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -113,7 +113,7 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                if (itemCount == 0)
+                if (positionStart == 0)
                     findViewById(R.id.no_debts).setVisibility(View.VISIBLE);
             }
         });

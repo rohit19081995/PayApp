@@ -59,6 +59,7 @@ public class AddTransactionFragment extends DialogFragment {
     private RadioGroup radioGroup;
     private RadioButton borrowButton;
     private RadioButton lendButton;
+    private ProgressBar mLoadingIndicator;
 
     public AddTransactionFragment() {
         // Required empty public constructor
@@ -102,6 +103,13 @@ public class AddTransactionFragment extends DialogFragment {
         amount = (EditText) fragmentLayout.findViewById(R.id.amount);
         borrowButton = (RadioButton) radioGroup.findViewById(R.id.borrow);
         lendButton = (RadioButton) radioGroup.findViewById(R.id.lend);
+        mLoadingIndicator = ((ProgressBar) fragmentLayout.findViewById(R.id.pb_loading_indicator));
+
+
+        if ((borrowButton.isChecked() && owed > 0) || (!borrowButton.isChecked() && owed < 0))
+            amount.setText(String.format(Locale.getDefault(),"%,.2f", Math.abs(owed)));
+        else
+            amount.setText(R.string.default_number);
 
         borrowButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -136,7 +144,8 @@ public class AddTransactionFragment extends DialogFragment {
 
     public void loadItemClickedState() {
         final LinearLayout nameLayout = (LinearLayout) fragmentLayout.findViewById(R.id.name_layout);
-        inputLayout.setVisibility(View.INVISIBLE);
+        inputLayout.setVisibility(View.GONE);
+        //mLoadingIndicator.setVisibility(View.GONE);
         inputLayout.setClickable(false);
         nameLayout.setVisibility(View.VISIBLE);
         TextView name = (TextView) nameLayout.findViewById(R.id.text1);
@@ -243,7 +252,6 @@ public class AddTransactionFragment extends DialogFragment {
     public void loadUserSelectState() {
         final DelayAutoCompleteTextView textView = (DelayAutoCompleteTextView) fragmentLayout.findViewById(R.id.name_search);
         textView.setThreshold(THRESHOLD);
-        ProgressBar mLoadingIndicator = ((ProgressBar) fragmentLayout.findViewById(R.id.pb_loading_indicator));
         final FirebaseSearchAdapter<User> searchAdapter = new FirebaseSearchAdapter<User>(getActivity(), User.class, R.layout.image_dropdown) {
             @Override
             protected void populateView(View v, User model, int position) {
