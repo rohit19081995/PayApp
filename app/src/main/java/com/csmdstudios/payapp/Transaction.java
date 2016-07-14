@@ -1,5 +1,7 @@
 package com.csmdstudios.payapp;
 
+import com.google.firebase.database.ServerValue;
+
 /**
  * Created by wayne on 8/7/16.
  */
@@ -7,9 +9,14 @@ public class Transaction {
     private double owed;
     private Boolean unvalidated;
     private String description;
-    private long timestamp;
+    private Object timestamp;
 
     public Transaction() {
+    }
+
+    public Transaction(double owed) {
+        this.owed = owed;
+        timestamp = ServerValue.TIMESTAMP;
     }
 
     public double getOwed() {
@@ -36,7 +43,7 @@ public class Transaction {
         this.description = description;
     }
 
-    public long getTimestamp() {
+    public Object getTimestamp() {
         return timestamp;
     }
 

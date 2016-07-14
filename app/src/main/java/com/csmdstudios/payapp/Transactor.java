@@ -1,5 +1,7 @@
 package com.csmdstudios.payapp;
 
+import com.google.firebase.database.ServerValue;
+
 /**
  * Created by wayne on 1/7/16.
  */
@@ -9,9 +11,14 @@ public class Transactor {
     private double owed;
     private Boolean unvalidated;
     private String name;
-    private long timestamp;
+    private Object timestamp;
 
     public Transactor() {
+    }
+
+    public Transactor(String name) {
+        this.name = name;
+        timestamp = ServerValue.TIMESTAMP;
     }
 
     public String getPic_url() {
@@ -54,7 +61,7 @@ public class Transactor {
         this.unvalidated = unvalidated;
     }
 
-    public long getTimestamp() {
+    public Object getTimestamp() {
         return timestamp;
     }
 

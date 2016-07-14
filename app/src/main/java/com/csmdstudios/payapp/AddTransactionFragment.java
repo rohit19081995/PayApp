@@ -145,7 +145,7 @@ public class AddTransactionFragment extends DialogFragment {
     public void loadItemClickedState() {
         final LinearLayout nameLayout = (LinearLayout) fragmentLayout.findViewById(R.id.name_layout);
         inputLayout.setVisibility(View.GONE);
-        //mLoadingIndicator.setVisibility(View.GONE);
+        mLoadingIndicator.setVisibility(View.GONE);
         inputLayout.setClickable(false);
         nameLayout.setVisibility(View.VISIBLE);
         TextView name = (TextView) nameLayout.findViewById(R.id.text1);
@@ -186,63 +186,92 @@ public class AddTransactionFragment extends DialogFragment {
                 }
                 //double newAmount = Double.parseDouble(amount.getText().toString());
                 if (newAmount > 0) {
-                    DatabaseReference mRef = FirebaseDatabase.getInstance()
+                    DatabaseReference userTransactionRef = FirebaseDatabase.getInstance()
                             .getReference(mUser.getUid() + "/transactions/" + user.getUID());
-                    DatabaseReference nRef = FirebaseDatabase.getInstance()
+                    DatabaseReference mUserTransactionRef = FirebaseDatabase.getInstance()
                             .getReference(user.getUID() + "/transactions/" + mUser.getUid());
-                    String key = mRef.push().getKey();
-                    mRef = mRef.child(key);
-                    nRef = nRef.child(key);
-                    DatabaseReference mRef2 = FirebaseDatabase.getInstance()
+                    String key = userTransactionRef.push().getKey();
+                    userTransactionRef = userTransactionRef.child(key);
+                    mUserTransactionRef = mUserTransactionRef.child(key);
+                    DatabaseReference userTransactorRef = FirebaseDatabase.getInstance()
                             .getReference(mUser.getUid() + "/transactors/" + user.getUID());
-                    DatabaseReference nRef2 = FirebaseDatabase.getInstance()
+                    DatabaseReference mUserTransactorRef = FirebaseDatabase.getInstance()
                             .getReference(user.getUID() + "/transactors/" + mUser.getUid());
-                    mRef2.child("name").setValue(user.getName());
-                    nRef2.child("name").setValue(mUser.getDisplayName());
-                    mRef2.child("pic_url").setValue(user.getPic_url());
+                    Transactor userTransactor = new Transactor(user.getName());
+                    Transactor mUserTransactor = new Transactor(mUser.getDisplayName());
+                    Transaction userTransaction;
+                    Transaction mUserTransaction;
+//                    userTransactorRef.child("name").setValue(user.getName());
+//                    mUserTransactorRef.child("name").setValue(mUser.getDisplayName());
+//                    userTransactorRef.child("pic_url").setValue(user.getPic_url());
+                    userTransactor.setPic_url(user.getPic_url());
+
                     if (mUser.getPhotoUrl() != null)
-                        nRef2.child("pic_url").setValue(mUser.getPhotoUrl().toString());
+//                        mUserTransactorRef.child("pic_url").setValue(mUser.getPhotoUrl().toString());
+                        mUserTransactor.setPic_url(mUser.getPhotoUrl().toString());
                     double newOwed;
                     if (borrowButton.isChecked()) {
                         //Do not validate
                         newOwed = owed - newAmount;
                         if (newOwed == 0) {
-                            mRef2.setValue(null);
-                            nRef2.setValue(null);
+//                            userTransactorRef.setValue(null);
+//                            mUserTransactorRef.setValue(null);
+                            userTransactor = null;
+                            mUserTransactor = null;
                         } else {
-                            mRef2.child("owed").setValue(owed - newAmount);
-                            nRef2.child("owed").setValue(-owed + newAmount);
+//                            userTransactorRef.child("owed").setValue(newOwed);
+//                            mUserTransactorRef.child("owed").setValue(-newOwed);
+                            userTransactor.setOwed(newOwed);
+                            mUserTransactor.setOwed(-newOwed);
                         }
-                        mRef.child("owed").setValue(-newAmount);
-                        nRef.child("owed").setValue(newAmount);
+//                        userTransactionRef.child("owed").setValue(-newAmount);
+//                        mUserTransactionRef.child("owed").setValue(newAmount);
+                        userTransaction = new Transaction(-newAmount);
+                        mUserTransaction = new Transaction(newAmount);
                     } else {
                         //validate
                         newOwed = owed + newAmount;
                         if (newOwed == 0) {
-                            mRef2.setValue(null);
-                            nRef2.setValue(null);
+//                            userTransactorRef.setValue(null);
+//                            mUserTransactorRef.setValue(null);
+                            userTransactor = null;
+                            mUserTransactor = null;
                         } else {
-                            mRef2.child("owed").setValue(owed + newAmount);
-                            mRef2.child("unvalidated").setValue(true);
-                            nRef2.child("owed").setValue(-owed - newAmount);
-                            nRef2.child("unvalidated").setValue(true);
+//                            userTransactorRef.child("owed").setValue(newOwed);
+//                            userTransactorRef.child("unvalidated").setValue(true);
+//                            mUserTransactorRef.child("owed").setValue(-newOwed);
+//                            mUserTransactorRef.child("unvalidated").setValue(true);
+                            userTransactor.setOwed(newOwed);
+                            userTransactor.setUnvalidated(true);
+                            mUserTransactor.setOwed(-newOwed);
+                            mUserTransactor.setUnvalidated(true);
                         }
-                        mRef.child("owed").setValue(newAmount);
-                        mRef.child("unvalidated").setValue(true);
-                        nRef.child("owed").setValue(-newAmount);
-                        nRef.child("unvalidated").setValue(true);
+//                        userTransactionRef.child("owed").setValue(newAmount);
+//                        userTransactionRef.child("unvalidated").setValue(true);
+//                        mUserTransactionRef.child("owed").setValue(-newAmount);
+//                        mUserTransactionRef.child("unvalidated").setValue(true);
+                        userTransaction = new Transaction(newAmount);
+                        userTransaction.setUnvalidated(true);
+                        mUserTransaction = new Transaction(-newAmount);
+                        mUserTransaction.setUnvalidated(true);
                     }
-                    if (newOwed != 0) {
-                        mRef2.child("timestamp").setValue((ServerValue.TIMESTAMP));
-                        nRef2.child("timestamp").setValue((ServerValue.TIMESTAMP));
-                    }
+//                    if (newOwed != 0) {
+//                        userTransactorRef.child("timestamp").setValue((ServerValue.TIMESTAMP));
+//                        mUserTransactorRef.child("timestamp").setValue((ServerValue.TIMESTAMP));
+//                    }
                     String description = descriptionLayout.getEditText().getText().toString();
                     if ( description.length() > 0) {
-                        mRef.child("description").setValue(description);
-                        nRef.child("description").setValue(description);
+//                        userTransactionRef.child("description").setValue(description);
+//                        mUserTransactionRef.child("description").setValue(description);
+                        userTransaction.setDescription(description);
+                        mUserTransaction.setDescription(description);
                     }
-                    mRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
-                    nRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
+//                    userTransactionRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
+//                    mUserTransactionRef.child("timestamp").setValue(ServerValue.TIMESTAMP);
+                    userTransactorRef.setValue(userTransactor);
+                    mUserTransactorRef.setValue(mUserTransactor);
+                    userTransactionRef.setValue(userTransaction);
+                    mUserTransactionRef.setValue(mUserTransaction);
                 }
                 dismiss();
             }

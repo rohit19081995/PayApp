@@ -9,15 +9,6 @@
     android:paddingStart="10dp"
     android:paddingEnd="10dp">
 
-    <View
-        android:id="@+id/divider_view"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/lt_gray"
-        android:layout_marginBottom="5dp"
-        android:layout_marginStart="63dp"
-        android:layout_above="@+id/imageView"/>
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
         android:layout_width="48dp"
@@ -25,8 +16,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
         android:src="@drawable/ic_person_white_24px"
         app:civ_border_color="@color/colorPrimaryDark"
         app:civ_border_width="2dp"
@@ -62,5 +51,14 @@
         android:layout_alignParentEnd="true"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="30sp" />
+
+    <View
+        android:id="@+id/divider_view"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/lt_gray"
+        android:layout_marginTop="14dp"
+        android:layout_marginStart="63dp"
+        android:layout_below="@+id/imageView"/>
 
 </RelativeLayout>

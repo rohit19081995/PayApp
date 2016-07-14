@@ -3,12 +3,17 @@ package com.csmdstudios.payapp;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -50,7 +55,7 @@ public class LoggedInActivity extends AppCompatActivity {
         setSupportActionBar(myToolbar);
         ActionBar ab = getSupportActionBar();
         mRecyclerView = (RecyclerView) findViewById(R.id.transactor_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
+//        mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -97,7 +102,8 @@ public class LoggedInActivity extends AppCompatActivity {
                     viewHolder.owedView.setTextColor(ContextCompat.getColor(LoggedInActivity.this, R.color.colorOwes));
                 }
                 viewHolder.owedView.setText(String.format(Locale.getDefault(),"%s %,.2f", currency, Math.abs(owed)));
-                if (position == getItemCount()-1) viewHolder.dividerView.setVisibility(View.GONE);
+                if (position == 0) viewHolder.dividerView.setVisibility(View.INVISIBLE);
+                else if (position == getItemCount()-1) viewHolder.dividerView.setVisibility(View.VISIBLE);
             }
         };
 
@@ -113,8 +119,21 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onItemRangeRemoved(int positionStart, int itemCount) {
                 super.onItemRangeRemoved(positionStart, itemCount);
-                if (positionStart == 0)
+                if (mLayoutManager.getChildCount() == 0)
                     findViewById(R.id.no_debts).setVisibility(View.VISIBLE);
+                else if (positionStart == 0) {
+                    Log.d("position", positionStart+((TextView)mLayoutManager.getChildAt(1).findViewById(R.id.transactor_name)).getText().toString());
+                    mLayoutManager.getChildAt(1).findViewById(R.id.divider_view).setVisibility(View.INVISIBLE);
+                }
+            }
+
+            @Override
+            public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                if (fromPosition == 0) {
+                    mLayoutManager.getChildAt(0).findViewById(R.id.divider_view).setVisibility(View.INVISIBLE);
+                    mLayoutManager.getChildAt(toPosition).findViewById(R.id.divider_view).setVisibility(View.VISIBLE);
+                }
             }
         });
 
