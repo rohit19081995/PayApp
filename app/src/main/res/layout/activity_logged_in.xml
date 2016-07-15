@@ -20,6 +20,8 @@
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="70dp"
+        android:clipToPadding="false"
         android:layout_below="@+id/my_toolbar"
         android:id="@+id/transactor_recycler_view"/>
 
