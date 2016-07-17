@@ -5,16 +5,16 @@ import com.google.firebase.database.ServerValue;
 /**
  * Created by wayne on 8/7/16.
  */
-public class Transaction {
+public class AppTransaction {
     private double owed;
     private Boolean unvalidated;
     private String description;
     private Object timestamp;
 
-    public Transaction() {
+    public AppTransaction() {
     }
 
-    public Transaction(double owed) {
+    public AppTransaction(double owed) {
         this.owed = owed;
         timestamp = ServerValue.TIMESTAMP;
     }

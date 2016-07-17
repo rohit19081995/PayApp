@@ -1,47 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:clipToPadding="false"
-    android:background="@color/colorBackground"
     tools:context="com.csmdstudios.payapp.LoggedInActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/my_toolbar"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:elevation="4dp"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_height="match_parent"
+        android:id="@+id/top_relative"
+        android:background="@color/colorBackground"
+        android:clipToPadding="false">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="70dp"
-        android:clipToPadding="false"
-        android:layout_below="@+id/my_toolbar"
-        android:id="@+id/transactor_recycler_view"/>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/my_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/transactor_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_toolbar"
+            android:clipToPadding="false"
+            android:paddingBottom="100dp" />
+
+        <TextView
+            android:id="@+id/no_debts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/transactor_recycler_view"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:text="@string/no_debts"
+            android:textSize="20sp" />
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_add"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        app:layout_anchor="@+id/user_info"
+        app:layout_anchorGravity="top|end"
         android:layout_margin="@dimen/fab_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
+        android:src="@drawable/ic_add" />
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/user_info"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/no_debts"
-        android:id="@+id/no_debts"
-        android:layout_alignTop="@+id/transactor_recycler_view"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="100dp" />
-</RelativeLayout>
+        android:layout_gravity="bottom"
+        android:layout_marginTop="50dp"
+        android:elevation="4dp">
+
+        <TextView
+            android:id="@+id/info_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/divider_view"
+            android:text="Totally, you owe"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/total_owed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/info_view"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/divider_view"
+            android:text="\u2834 200"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="40dp"
+            android:id="@+id/divider_view"
+            android:layout_marginStart="5dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/button"
+            android:background="@color/lt_gray"/>
+
+        <Button
+            android:id="@+id/button"
+            android:background="@android:color/transparent"
+            android:textColor="@color/colorPrimary"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/validate_all" />
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

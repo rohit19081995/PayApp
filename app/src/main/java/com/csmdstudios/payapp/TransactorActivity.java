@@ -1,14 +1,10 @@
 package com.csmdstudios.payapp;
 
 import android.app.DialogFragment;
-import android.app.Fragment;
 import android.app.FragmentTransaction;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -27,14 +23,11 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.api.model.StringList;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -96,13 +89,13 @@ public class TransactorActivity extends AppCompatActivity {
             }
         };
 
-        final FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<Transaction, TransactionViewHolder>(
-                Transaction.class,
+        final FirebaseRecyclerAdapter mAdapter = new FirebaseRecyclerAdapter<AppTransaction, TransactionViewHolder>(
+                AppTransaction.class,
                 R.layout.transaction_layout,
                 TransactionViewHolder.class,
                 FirebaseDatabase.getInstance().getReference(mUser.getUid() + "/transactions/" + UID)) {
             @Override
-            protected void populateViewHolder(TransactionViewHolder viewHolder, Transaction model, int position) {
+            protected void populateViewHolder(TransactionViewHolder viewHolder, AppTransaction model, int position) {
                 double owed = model.getOwed();
                 if (owed > 0) {
                     // You paid

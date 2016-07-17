@@ -114,6 +114,7 @@ public class LoggedInActivity extends AppCompatActivity {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
                 findViewById(R.id.no_debts).setVisibility(View.INVISIBLE);
+                mRecyclerView.scrollToPosition(mLayoutManager.getItemCount()-1);
             }
 
             @Override
